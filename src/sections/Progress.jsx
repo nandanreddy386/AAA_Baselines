@@ -8,8 +8,7 @@ const Progress = () => {
         <div className="section-header">
           <h2>Project Progress & Implementation State</h2>
           <p>
-            Tracked milestones from <strong>23CSE498 Project Phase 2 (Panel Review 1)</strong>. 
-            All baseline modules across all four tracks are fully functional, integrated, and demonstrated live.
+            Current implementation status across all authentication modules. All core components are functional, integrated, and verified.
           </p>
         </div>
 
@@ -28,19 +27,19 @@ const Progress = () => {
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-              <span className="badge badge-success" style={{ fontSize: '0.85rem' }}>Phase 0 & 1 Completed</span>
-              <span className="badge badge-primary" style={{ fontSize: '0.85rem' }}>Phase 2 Demonstrated Live</span>
+              <span className="badge badge-success" style={{ fontSize: '0.85rem' }}>Core Pipeline Complete</span>
+              <span className="badge badge-primary" style={{ fontSize: '0.85rem' }}>End-to-End Verified</span>
             </div>
             <h3 style={{ fontSize: '1.25rem', color: '#1e3a8a', margin: 0 }}>
-              End-to-End Authentication Pipeline Verified (Port 8000 & Port 5173)
+              End-to-End Authentication Pipeline Operational
             </h3>
             <p style={{ margin: '4px 0 0 0', color: 'var(--color-text-secondary)', fontSize: '0.92rem' }}>
-              Both ACCEPT (Bona Fide speaker match) and REJECT (Layer 2 spoof blocked & Layer 1 identity mismatch) paths demonstrated to panel on Sept 18, 2026.
+              Both ACCEPT (Bona Fide speaker match) and REJECT (Layer 2 spoof blocked & Layer 1 identity mismatch) paths verified end-to-end.
             </p>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Review Date</span>
-            <strong style={{ color: 'var(--color-text)' }}>September 18, 2026</strong>
+            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Release Status</span>
+            <strong style={{ color: 'var(--color-text)' }}>Active Baseline (v1.0)</strong>
           </div>
         </div>
 
@@ -95,9 +94,9 @@ const Progress = () => {
         {/* Plans for Upcoming Semesters */}
         <div>
           <div className="section-header" style={{ marginBottom: '28px', textAlign: 'left' }}>
-            <h3>🚀 Plans for Upcoming Semesters & Production Hardening</h3>
+            <h3>🚀 Engineering Roadmap & Production Hardening</h3>
             <p style={{ margin: 0 }}>
-              Roadmap extracted from Slide 9 of the Project Review presentation covering architecture upgrades, adversarial red-teaming, and model retraining.
+              Key technical initiatives covering framework adapters, adversarial red-teaming, and model fine-tuning.
             </p>
           </div>
 

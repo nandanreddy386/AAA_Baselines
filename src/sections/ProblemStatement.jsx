@@ -182,15 +182,6 @@ const styles = {
     margin: '0 auto',
     fontStyle: 'italic',
   },
-
-  /* ── Source footnote ── */
-  source: {
-    marginTop: '32px',
-    textAlign: 'center',
-    fontSize: '0.78rem',
-    color: 'var(--color-text-muted)',
-    fontStyle: 'italic',
-  },
 };
 
 /* ─── Responsive overrides via media-query-like inline approach ─── */
@@ -289,11 +280,6 @@ export default function ProblemStatement() {
             modification to existing enterprise systems?"
           </p>
         </div>
-
-        {/* Source note */}
-        <p style={styles.source}>
-          Source: AAA Engine Task 1 — Motivation &amp; Problem Statement
-        </p>
       </div>
     </section>
   );

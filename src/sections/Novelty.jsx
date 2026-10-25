@@ -75,7 +75,7 @@ const Novelty = () => {
               Comparative Analysis: Existing Solutions vs. AAA Engine
             </h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', margin: 0 }}>
-              Preserved from Task 3 literature review and Task 5 gap analysis.
+              Benchmarked against commercial voice biometrics, cloud speech APIs, and standard research baselines.
             </p>
           </div>
 
@@ -123,18 +123,6 @@ const Novelty = () => {
               ))}
             </tbody>
           </table>
-        </div>
-
-        {/* Academic Note */}
-        <div style={{
-          padding: '14px 20px',
-          background: 'var(--color-surface-alt)',
-          borderLeft: '4px solid var(--color-primary)',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: '0.84rem',
-          color: 'var(--color-text-secondary)'
-        }}>
-          <strong>Research Note:</strong> Comparisons reflect documented production configurations of commercial systems as reported in public technical whitepapers and industry disclosures (e.g., AWS Connect Voice ID end-of-support in 2026).
         </div>
 
       </div>

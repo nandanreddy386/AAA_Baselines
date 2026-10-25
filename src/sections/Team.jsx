@@ -8,7 +8,7 @@ const Team = () => {
         <div className="section-header">
           <h2>Project Team & Leadership</h2>
           <p>
-            Developed under <strong>23CSE498 Project Phase 2</strong> at Amrita School of Computing, Department of Computer Science & Engineering.
+            Engineered by the AAA Engine team at the Department of Computer Science & Engineering, Amrita School of Computing.
           </p>
         </div>
 
@@ -109,13 +109,13 @@ const Team = () => {
               {/* Technical Enrichment MOOC */}
               <div style={{ marginTop: 'auto', paddingTop: '10px', borderTop: '1px dashed var(--color-border)' }}>
                 <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.74rem', textTransform: 'uppercase', fontWeight: '600', marginBottom: '4px' }}>
-                  Technical Enrichment ({member.enrichment.hours})
+                  Technical Specialization
                 </span>
                 <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
                   {member.enrichment.course}
                 </p>
                 <span className="badge badge-muted" style={{ marginTop: '6px', fontSize: '0.72rem' }}>
-                  {member.enrichment.platform}
+                  {member.enrichment.platform} · {member.enrichment.hours}
                 </span>
               </div>
             </div>
@@ -132,7 +132,7 @@ const Team = () => {
           fontSize: '0.88rem',
           color: 'var(--color-text-secondary)'
         }}>
-          <strong>{PROJECT.course}</strong> · <strong>{PROJECT.teamNumber}</strong> · Amrita Vishwa Vidyapeetham
+          <strong>AAA Engine — Biometric Security Engineering</strong> · Department of Computer Science & Engineering · Amrita Vishwa Vidyapeetham
         </div>
 
       </div>

@@ -9,10 +9,7 @@ export const PROJECT = {
   fullName: 'Adaptive Acoustic Auth (AAA) Engine',
   tagline: 'Adaptive, Challenge-Driven Voice Authentication Against Audio Spoofing',
   subtitle: 'A Plug-and-Play Biometric Security Middleware with Deepfake Immunity',
-  course: '23CSE498 – Project Phase 2 (Panel Review 1)',
-  teamNumber: 'Team Number: 90',
-  reviewDate: 'September 18, 2026',
-  projectType: 'Type 3: Software Project',
+  institution: 'Amrita School of Computing, Department of CSE',
   description:
     'A plug-and-play biometric security middleware that combines speaker verification (ECAPA-TDNN), audio anti-spoofing / deepfake detection (Wav2Vec2 / Wav2Vec2BERT), challenge-response active liveness authentication (HMAC-SHA256), and adaptive voiceprint updates (EMA).',
   github: 'https://github.com/Speech-Synthesis/AAA_Baselines',
@@ -20,7 +17,7 @@ export const PROJECT = {
     name: 'Dr. Harini N',
     title: 'Associate Professor, Department of CSE',
     institution: 'Amrita School of Computing',
-    note: 'Project Guide as confirmed in the Phase 2 Panel Review Presentation.',
+    note: 'Faculty Project Guide',
   },
   thresholds: {
     l1Similarity: 0.70,
@@ -214,7 +211,7 @@ export const API_ENDPOINTS = [
     response: `{
   "user_id": "4a7b9c21-83d2-4e9a-bb10-9f1234567890"
 }`,
-    notes: 'Documented in Slide 4 of the Review Presentation as part of the live 5-endpoint REST API.',
+    notes: 'Initial user registration endpoint generating a unique UUID for subsequent biometric voice enrollment.',
   },
   {
     method: 'POST',

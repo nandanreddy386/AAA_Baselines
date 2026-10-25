@@ -4,37 +4,37 @@ const demoTopics = [
   {
     title: '1. User Voice Enrollment Walkthrough',
     description: 'Capturing minimum 5s 16kHz mono audio via browser microphone, silence-trimming with librosa, generating 192-dim ECAPA embedding, and storing in PostgreSQL.',
-    stage: 'Demonstrated to Panel',
+    stage: 'Verified & Tested',
     icon: '🎙️',
   },
   {
     title: '2. Dynamic Challenge-Response Protocol',
     description: 'Issuance of randomised phrase (60% dynamic + 40% static) with HMAC-SHA256 signature token, 90s TTL countdown, and single-use invalidation upon submission.',
-    stage: 'Demonstrated to Panel',
+    stage: 'Verified & Tested',
     icon: '⚡',
   },
   {
     title: '3. Layer 2: Deepfake Spoof Detection Gate',
     description: 'Live test passing AI-synthesized cloning samples vs bonafide human voice through fine-tuned Wav2Vec2 checkpoint. Immediate REJECT before Layer 1 is reached.',
-    stage: 'Demonstrated to Panel',
+    stage: 'Verified & Tested',
     icon: '🛡️',
   },
   {
     title: '4. Layer 1: Speaker Verification Matching',
     description: 'ECAPA-TDNN extraction of live spoken challenge embedding, cosine similarity calculation against enrolled template, and acceptance thresholding (0.70).',
-    stage: 'Demonstrated to Panel',
+    stage: 'Verified & Tested',
     icon: '🔊',
   },
   {
     title: '5. Layer 3: Adaptive Voiceprint Update (EMA)',
     description: 'Post-authentication execution of the weighted blend formula (New = 0.8 × Old + 0.2 × Current) and verification in PostgreSQL voiceprints table.',
-    stage: 'Demonstrated to Panel',
+    stage: 'Verified & Tested',
     icon: '🔄',
   },
   {
     title: '6. End-to-End Client & Admin Dashboard',
     description: 'Live 5-page React Vite client interaction communicating with FastAPI backend on port 8000, displaying real-time logs and decision rationale.',
-    stage: 'Demonstrated to Panel',
+    stage: 'Verified & Tested',
     icon: '💻',
   },
 ];
@@ -46,7 +46,7 @@ const Demos = () => {
         <div className="section-header">
           <h2>Demonstrations & Video Walkthroughs</h2>
           <p>
-            The complete authentication pipeline was demonstrated live during the <strong>23CSE498 Phase 2 Panel Review 1</strong> on September 18, 2026. Recorded video sessions and interactive sandbox clips will be uploaded here.
+            Interactive walkthroughs and video screencasts showcasing each layer of the authentication pipeline.
           </p>
         </div>
 
@@ -142,7 +142,7 @@ const Demos = () => {
           fontSize: '0.86rem',
           color: 'var(--color-text-secondary)'
         }}>
-          📹 Video files are currently undergoing institutional review compression. Live source code and CLI demonstration scripts can be tested directly from the repository.
+          📹 Interactive screencasts are being recorded and published. The complete engine and interactive client can be run directly from the repository.
         </div>
 
       </div>

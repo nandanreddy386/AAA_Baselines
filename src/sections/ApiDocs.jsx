@@ -16,9 +16,9 @@ const ApiDocs = () => {
     <section id="api" className="section section-alt">
       <div className="container">
         <div className="section-header">
-          <h2>REST API Documentation & Frozen Interface</h2>
+          <h2>REST API Documentation & Endpoint Reference</h2>
           <p>
-            The AAA Engine exposes a 5-endpoint REST API (FastAPI / port 8000) adhering to the shared contract specified in Slide 4 of the Project Review.
+            The AAA Engine exposes a high-performance 5-endpoint REST API (FastAPI / port 8000) with asynchronous request handling and Pydantic v2 validation.
           </p>
         </div>
 

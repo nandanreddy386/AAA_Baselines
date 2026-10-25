@@ -99,7 +99,7 @@ const References = () => {
         }}>
           <h4 style={{ marginBottom: '8px', color: 'var(--color-text)' }}>Acknowledgements & Institutional Support</h4>
           <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', maxWidth: '720px', margin: '0 auto', lineHeight: '1.6' }}>
-            The authors express sincere gratitude to <strong>{PROJECT.guide.name}</strong> ({PROJECT.guide.title}, Department of CSE) for continuous guidance and architectural reviews throughout Project Phase 2, and to the Amrita High-Performance Computing (HPC) facility for providing GPU acceleration resources for baseline model training.
+            The authors express sincere gratitude to <strong>{PROJECT.guide.name}</strong> ({PROJECT.guide.title}, Department of CSE) for continuous guidance and architectural reviews throughout the project, and to the Amrita High-Performance Computing (HPC) facility for providing GPU acceleration resources for baseline model training.
           </p>
         </div>
 

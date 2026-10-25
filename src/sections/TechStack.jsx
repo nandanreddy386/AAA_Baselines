@@ -105,17 +105,6 @@ export default function TechStack() {
             </div>
           );
         })}
-
-        {/* ── Footer note ─────────────────────── */}
-        <p style={{
-          textAlign: 'center', fontSize: '0.78rem',
-          color: 'var(--color-text-muted)', marginTop: '1.5rem',
-          maxWidth: 640, marginLeft: 'auto', marginRight: 'auto',
-          lineHeight: 1.6, fontStyle: 'italic',
-        }}>
-          Technology selections are documented in Task&nbsp;4 — Architecture Design.
-          Integration status reflects the current project phase.
-        </p>
       </div>
     </section>
   );
