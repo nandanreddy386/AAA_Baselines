@@ -2,7 +2,11 @@
 
 **Adaptive Audio Authentication with Deepfake Detection**
 
-A production-ready voice authentication system that combines four security layers: deepfake detection, phrase verification, speaker recognition, and adaptive voiceprint evolution.
+[![Live Demo & Documentation Portal](https://img.shields.io/badge/Live_Portal-nandanreddy386.github.io%2FAAA__Baselines-blue?style=for-the-badge&logo=githubpages)](https://nandanreddy386.github.io/AAA_Baselines/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-darkgreen?style=for-the-badge&logo=github)](https://github.com/nandanreddy386/AAA_Baselines)
+
+> 🌐 **Interactive Documentation & Web Portal:** [https://nandanreddy386.github.io/AAA_Baselines/](https://nandanreddy386.github.io/AAA_Baselines/)  
+> Complete portal featuring Problem Statement, Project Objectives, 4-Layer Pipeline Visualizer, Demonstration Videos, Architecture Diagrams, and Interactive Verification UI. Source code is located in both frontend/ and website/.
 
 ---
 

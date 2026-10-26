@@ -1,15 +1,16 @@
 /**
  * Web Audio API PCM WAV Converter
  * Converts browser MediaRecorder Blobs (WebM/Opus) into valid 16kHz Mono RIFF WAV Blobs
- * Uses OfflineAudioContext for proper resampling
+ * Uses OfflineAudioContext for proper resampling to match SpeechBrain / Wav2Vec2 requirements.
  */
 
 export async function convertBlobTo16kHzWav(webmBlob) {
   try {
     const arrayBuffer = await webmBlob.arrayBuffer();
 
-    // First decode at native sample rate
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Decode at native sample rate
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContextClass();
     const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
     audioCtx.close();
 

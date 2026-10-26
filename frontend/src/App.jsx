@@ -1,98 +1,85 @@
 import React, { useState, useEffect } from 'react';
-import { Sidebar, HeaderStepper } from './components/Navbar';
-import { RegisterPage } from './components/RegisterPage';
-import { EnrollPage } from './components/EnrollPage';
-import { LoginPage } from './components/LoginPage';
-import { VerifyPage } from './components/VerifyPage';
-import { DashboardPage } from './components/DashboardPage';
-import { checkServerHealth, getAllUsers } from './api';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+import LiveAppPage from './pages/LiveAppPage';
+import DemosPage from './pages/DemosPage';
+import WorkflowPage from './pages/WorkflowPage';
+import ArchitecturePage from './pages/ArchitecturePage';
+import ApiDocsPage from './pages/ApiDocsPage';
+import StatusTeamPage from './pages/StatusTeamPage';
 
-function App() {
-  const [activeTab, setActiveTab] = useState('register');
-  const [isServerLive, setIsServerLive] = useState(false);
+const VALID_PAGES = ['home', 'app', 'demos', 'workflow', 'architecture', 'docs', 'team'];
 
-  const [registeredUsers, setRegisteredUsers] = useState([]);
-  const [activeUser, setActiveUser] = useState(null);
+function getPageFromHash() {
+  const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+  return VALID_PAGES.includes(hash) ? hash : 'home';
+}
 
-  // Load users from database on startup
-  const loadUsers = async () => {
-    console.log('Loading users...');
-    const users = await getAllUsers();
-    console.log('Loaded users:', users);
-    setRegisteredUsers(users);
-    if (users.length > 0 && !activeUser) {
-      setActiveUser(users[0]);
+export default function App() {
+  const [activePage, setActivePage] = useState(getPageFromHash);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Sync state with URL hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const page = getPageFromHash();
+      setActivePage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Monitor scroll for back-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 350);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navigateTo = (pageId) => {
+    if (VALID_PAGES.includes(pageId)) {
+      window.location.hash = `#/${pageId}`;
+      setActivePage(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  useEffect(() => {
-    checkServerHealth().then(setIsServerLive);
-    loadUsers();
-  }, []);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <div className="saas-layout">
-      {/* Sidebar Navigation */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        activeUser={activeUser}
-        isServerLive={isServerLive}
-      />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header activePage={activePage} onNavigate={navigateTo} />
 
-      {/* Main Process Flow Content Area */}
-      <main className="saas-main-content">
-        {/* Header Process Flow Stepper */}
-        <HeaderStepper
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
-
-        {/* Step 1: Register */}
-        {activeTab === 'register' && (
-          <RegisterPage
-            activeUser={activeUser}
-            setActiveUser={setActiveUser}
-            registeredUsers={registeredUsers}
-            setRegisteredUsers={setRegisteredUsers}
-            refreshUsers={loadUsers}
-            onComplete={() => setActiveTab('enroll')}
-          />
-        )}
-
-        {/* Step 2: Enroll */}
-        {activeTab === 'enroll' && (
-          <EnrollPage
-            activeUser={activeUser}
-            onComplete={() => setActiveTab('verify')}
-          />
-        )}
-
-        {/* Step 3: Authenticate */}
-        {activeTab === 'verify' && (
-          <VerifyPage
-            activeUser={activeUser}
-            onComplete={() => setActiveTab('dashboard')}
-          />
-        )}
-
-        {/* Step 4: Audit & Analytics */}
-        {activeTab === 'dashboard' && (
-          <DashboardPage activeUser={activeUser} />
-        )}
-
-        {/* Advanced Step: Switch User */}
-        {activeTab === 'login' && (
-          <LoginPage
-            activeUser={activeUser}
-            setActiveUser={setActiveUser}
-            registeredUsers={registeredUsers}
-            onSelectUser={() => setActiveTab('verify')}
-          />
-        )}
+      <main style={{ flex: 1 }}>
+        {activePage === 'home' && <HomePage onNavigate={navigateTo} />}
+        {activePage === 'app' && <LiveAppPage />}
+        {activePage === 'demos' && <DemosPage onNavigate={navigateTo} />}
+        {activePage === 'workflow' && <WorkflowPage onNavigate={navigateTo} />}
+        {activePage === 'architecture' && <ArchitecturePage onNavigate={navigateTo} />}
+        {activePage === 'docs' && <ApiDocsPage />}
+        {activePage === 'team' && <StatusTeamPage />}
       </main>
+
+      <Footer onNavigate={navigateTo} />
+
+      {/* Floating scroll to top */}
+      <button
+        onClick={scrollToTop}
+        className={`scroll-top ${showScrollTop ? 'visible' : ''}`}
+        aria-label="Scroll to top"
+        title="Back to top"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="18 15 12 9 6 15" />
+        </svg>
+      </button>
     </div>
   );
 }
-
-export default App;
