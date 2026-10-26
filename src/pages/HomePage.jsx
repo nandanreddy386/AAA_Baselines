@@ -4,7 +4,7 @@ import { PROJECT, PIPELINE_LAYERS, NOVELTY_COMPARISON } from '../data/projectDat
 export default function HomePage({ onNavigate }) {
   return (
     <div>
-      {/* Hero Section */}
+      {/* 1. HERO SECTION */}
       <section
         style={{
           position: 'relative',
@@ -15,7 +15,7 @@ export default function HomePage({ onNavigate }) {
         }}
       >
         <div className="container" style={{ textAlign: 'center', maxWidth: '960px' }}>
-          {/* Eyebrow */}
+          {/* Eyebrow Badge */}
           <div
             style={{
               display: 'inline-flex',
@@ -29,9 +29,10 @@ export default function HomePage({ onNavigate }) {
               fontWeight: 700,
               letterSpacing: '0.04em',
               marginBottom: '1.25rem',
+              border: '1px solid var(--color-primary-border)',
             }}
           >
-            🛡️ {PROJECT.fullName} • {PROJECT.teamNumber}
+            🛡️ {PROJECT.fullName}
           </div>
 
           {/* Headline */}
@@ -61,7 +62,7 @@ export default function HomePage({ onNavigate }) {
             style={{
               fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
               color: 'var(--color-text-secondary)',
-              fontWeight: 500,
+              fontWeight: 600,
               lineHeight: 1.5,
               marginBottom: '1.25rem',
             }}
@@ -75,14 +76,35 @@ export default function HomePage({ onNavigate }) {
               color: 'var(--color-text-muted)',
               lineHeight: 1.7,
               maxWidth: '820px',
-              margin: '0 auto 2rem',
+              margin: '0 auto 1.75rem',
             }}
           >
-            A high-assurance biometric middleware that pairs <strong>SpeechBrain ECAPA-TDNN</strong> speaker verification with <strong>Wav2Vec2</strong> audio anti-spoofing, <strong>OpenAI Whisper</strong> spoken challenge phrase verification, <strong>HMAC-SHA256</strong> replay protection, and continuous <strong>Exponential Moving Average (EMA)</strong> voiceprint adaptation.
+            A high-assurance biometric security middleware combining <strong>SpeechBrain ECAPA-TDNN</strong> speaker verification, <strong>Hugging Face Wav2Vec2</strong> audio anti-spoofing, <strong>OpenAI Whisper</strong> dynamic phrase verification, <strong>HMAC-SHA256</strong> cryptographic replay protection, and continuous <strong>Exponential Moving Average (EMA)</strong> voiceprint adaptation.
           </p>
 
-          {/* Action CTAs */}
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
+          {/* Project Authority Metadata Pills */}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: '10px',
+              marginBottom: '2rem',
+            }}
+          >
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)', background: '#ffffff', border: '1px solid var(--color-border)', padding: '4px 12px', borderRadius: '16px' }}>
+              🏛️ {PROJECT.institution}
+            </span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)', background: '#ffffff', border: '1px solid var(--color-border)', padding: '4px 12px', borderRadius: '16px' }}>
+              👥 {PROJECT.teamNumber} • Course {PROJECT.course}
+            </span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)', background: '#ffffff', border: '1px solid var(--color-border)', padding: '4px 12px', borderRadius: '16px' }}>
+              🎓 Faculty Guide: {PROJECT.guide.name}, {PROJECT.guide.title}
+            </span>
+          </div>
+
+          {/* Primary Action Buttons */}
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={() => onNavigate('app')}
               className="btn btn-primary"
@@ -107,70 +129,86 @@ export default function HomePage({ onNavigate }) {
               GitHub Source Code ↗
             </a>
           </div>
+        </div>
+      </section>
 
-          {/* Interactive Pipeline Ribbon */}
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: 'var(--radius-xl)',
-              border: '1px solid var(--color-border)',
-              padding: '1.5rem',
-              boxShadow: 'var(--shadow-md)',
-              textAlign: 'left',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-text-muted)' }}>
-                VERIFIED ARCHITECTURE PIPELINE FLOW (backend/app/main.py)
-              </div>
-              <span style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: 700 }}>
-                Cascade Gating Strategy
-              </span>
+      {/* 2. PROBLEM STATEMENT (NEXT AFTER HERO) */}
+      <section style={{ padding: '4.5rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
+        <div className="container" style={{ maxWidth: '1100px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <span className="section-eyebrow">The Threat Landscape</span>
+            <h2 className="section-title">Problem Statement</h2>
+            <p className="section-subtitle">
+              Why traditional voice authentication fails against modern generative AI and acoustic spoofing attacks.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📉</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                47% of Indian Adults Targeted by Voice Scams
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                According to McAfee's global <em>Artificial Imposter</em> study, 47% of surveyed adults in India were directly targeted by AI voice scams, with 83% of victims suffering direct financial loss (averaging ₹50,000+ stolen) through 3-second generative voice clones of family members or banking officials.
+              </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
-              {PIPELINE_LAYERS.map((stage, i) => (
-                <div
-                  key={i}
-                  style={{
-                    padding: '1rem',
-                    borderRadius: 'var(--radius-md)',
-                    background: 'var(--color-surface)',
-                    border: '1px solid var(--color-border)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                  }}
-                >
-                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-primary)', textTransform: 'uppercase' }}>
-                    {stage.layer}
-                  </div>
-                  <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--color-text)' }}>
-                    {stage.title}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--color-text-muted)' }}>
-                    {stage.threshold}
-                  </div>
-                </div>
-              ))}
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>⚠️</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                The Classical Speaker Verification Flaw
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Conventional speaker recognition architectures (ECAPA-TDNN, x-vectors) only measure acoustic timbre similarity (<em>"Whose voice does this sound like?"</em>). They have zero native ability to differentiate between a live human vocal tract and an AI neural vocoder producing identical timbre.
+              </p>
+            </div>
+
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔄</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                Biological Voice Drift vs. Static Templates
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Natural acoustic drift caused by aging, respiratory fatigue, background acoustics, and microphone variance causes static voice templates to fail over time, resulting in false rejection rates exceeding 15% without continuous, verified adaptation.
+              </p>
+            </div>
+          </div>
+
+          {/* Research Question Box */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+              color: '#ffffff',
+              borderRadius: 'var(--radius-xl)',
+              padding: '2rem 2.5rem',
+              boxShadow: 'var(--shadow-lg)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
+              PROJECT RESEARCH QUESTION
+            </div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 600, lineHeight: 1.6, color: '#f8fafc' }}>
+              "How can a modular biometric authentication middleware combine deepfake audio detection, dynamic challenge-response, and continuous voiceprint adaptation to prevent acoustic spoofing without degrading genuine user verification accuracy?"
             </div>
           </div>
         </div>
       </section>
 
-      {/* Project Objectives Section */}
-      <section style={{ padding: '4rem 1.5rem', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
+      {/* 3. PROJECT OBJECTIVES (DIRECTLY AFTER PROBLEM STATEMENT) */}
+      <section style={{ padding: '4.5rem 1.5rem', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span className="section-eyebrow">Project Goals & Scope</span>
             <h2 className="section-title">Project Objectives</h2>
             <p className="section-subtitle">
-              Formal academic and technical engineering objectives established for the AAA Engine platform.
+              Formal technical and security engineering objectives established for the AAA Engine project.
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.5rem' }}>
-            <div className="saas-card" style={{ marginBottom: 0 }}>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
               <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🎙️</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
                 1. Robust Speaker Verification
@@ -180,7 +218,7 @@ export default function HomePage({ onNavigate }) {
               </p>
             </div>
 
-            <div className="saas-card" style={{ marginBottom: 0 }}>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
               <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🛡️</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
                 2. Deepfake & Audio Anti-Spoofing
@@ -190,7 +228,7 @@ export default function HomePage({ onNavigate }) {
               </p>
             </div>
 
-            <div className="saas-card" style={{ marginBottom: 0 }}>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
               <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🔐</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
                 3. Challenge-Response Active Liveness
@@ -200,7 +238,7 @@ export default function HomePage({ onNavigate }) {
               </p>
             </div>
 
-            <div className="saas-card" style={{ marginBottom: 0 }}>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
               <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🔄</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
                 4. Continuous Voiceprint Adaptation
@@ -210,7 +248,7 @@ export default function HomePage({ onNavigate }) {
               </p>
             </div>
 
-            <div className="saas-card" style={{ marginBottom: 0 }}>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
               <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>⚡</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
                 5. Plug-and-Play Middleware API
@@ -220,7 +258,7 @@ export default function HomePage({ onNavigate }) {
               </p>
             </div>
 
-            <div className="saas-card" style={{ marginBottom: 0 }}>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
               <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>📊</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
                 6. Forensic Auditing & Traceability
@@ -233,146 +271,82 @@ export default function HomePage({ onNavigate }) {
         </div>
       </section>
 
-      {/* Problem Statement Section */}
-      <section style={{ padding: '4rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
+      {/* 4. SYSTEM PIPEFLOW (PIPELINE FLOW) */}
+      <section style={{ padding: '4.5rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="section-eyebrow">The Threat Landscape</span>
-            <h2 className="section-title">Why Traditional Voice Authentication Fails Against Modern Generative AI</h2>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <span className="section-eyebrow">Cascaded Verification Sequence</span>
+            <h2 className="section-title">Authentication Pipeline Flow (Pipeflow)</h2>
             <p className="section-subtitle">
-              Voice deepfakes and automated cloning technologies have made conventional biometric voice recognition vulnerable to impersonation, synthetic generation, and pre-recorded replay injection.
+              The end-to-end zero-trust verification pipeline executed by the backend for every incoming authentication attempt.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-            <div className="saas-card" style={{ marginBottom: 0 }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📉</div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                47% of Indian Adults Targeted by Voice Scams
-              </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                According to McAfee's <em>Artificial Imposter</em> research, 83% of victims suffered direct financial loss, with ₹50,000+ lost on average due to 3-second generative voice clones of family members and banking representatives.
-              </p>
-            </div>
-
-            <div className="saas-card" style={{ marginBottom: 0 }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>⚠️</div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                The Classical Speaker Verification Flaw
-              </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Models like ECAPA-TDNN and x-vectors are designed solely to answer <em>"Whose voice does this sound like?"</em> They do not distinguish between an authentic human vocal tract and an AI neural vocoder producing the identical timbre.
-              </p>
-            </div>
-
-            <div className="saas-card" style={{ marginBottom: 0 }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔄</div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                Biological Voice Drift vs. Static Voiceprints
-              </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Natural acoustic drift caused by aging, respiratory fatigue, background environment, and microphone variance causes static voice templates to fail over time, resulting in false rejection rates exceeding 15%.
-              </p>
-            </div>
-          </div>
-
-          {/* Research Question Box */}
           <div
             style={{
-              background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-              color: '#ffffff',
+              background: '#ffffff',
               borderRadius: 'var(--radius-xl)',
+              border: '1px solid var(--color-border)',
               padding: '2rem',
-              boxShadow: 'var(--shadow-lg)',
+              boxShadow: 'var(--shadow-md)',
             }}
           >
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
-              PRIMARY RESEARCH QUESTION (23CSE498)
-            </div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 600, lineHeight: 1.6, color: '#f8fafc' }}>
-              "How can a modular biometric authentication middleware combine deepfake audio detection, dynamic challenge-response, and continuous voiceprint adaptation to prevent acoustic spoofing without degrading genuine user verification accuracy?"
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Capabilities Section */}
-      <section style={{ padding: '4rem 1.5rem', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
-        <div className="container" style={{ maxWidth: '1100px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="section-eyebrow">Defensive Capabilities</span>
-            <h2 className="section-title">The Four Pillars of AAA Engine</h2>
-            <p className="section-subtitle">
-              Every request passes through independent cryptographic and neural verification checkpoints.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
-            <div className="saas-card" style={{ marginBottom: 0 }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-primary)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                PILLAR 1
-              </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
-                ECAPA-TDNN Speaker Verification
-              </h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '1rem' }}>
-                Generates 192-dimensional embeddings via channel-attentive statistics pooling using <code>speechbrain/spkrec-ecapa-voxceleb</code>. Computes normalized cosine similarity clamped to [0, 1] with a calibrated 0.50 acceptance threshold.
-              </p>
-              <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--color-primary)' }}>
-                Target: EER &lt; 0.87% on VoxCeleb1
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
+              {PIPELINE_LAYERS.map((stage, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: '1.25rem 1rem',
+                    borderRadius: 'var(--radius-lg)',
+                    background: 'var(--color-surface)',
+                    border: '1.5px solid var(--color-border)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    position: 'relative',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-primary)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                      {stage.layer}
+                    </div>
+                    <div style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--color-text)', marginBottom: '6px' }}>
+                      {stage.title}
+                    </div>
+                    <div style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+                      {stage.spec}
+                    </div>
+                  </div>
+                  <div style={{ marginTop: '12px', paddingTop: '8px', borderTop: '1px solid var(--color-border)', fontSize: '0.74rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--color-primary)' }}>
+                    {stage.threshold}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="saas-card" style={{ marginBottom: 0 }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-danger)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                PILLAR 2
-              </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
-                Wav2Vec2 Deepfake Gate
-              </h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '1rem' }}>
-                Pre-verification defensive gate utilizing <code>garystafford/wav2vec2-deepfake-voice-detector</code>. Evaluates high-frequency spectral artifacts and vocoder signatures, blocking spoofed and synthetic audio before identity matching.
-              </p>
-              <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--color-danger)' }}>
-                Rejects if spoof prob &gt; 0.50
-              </div>
-            </div>
-
-            <div className="saas-card" style={{ marginBottom: 0 }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-success)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                PILLAR 3
-              </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
-                Whisper ASR Spoken Challenge
-              </h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '1rem' }}>
-                Dynamic phrase generation (e.g., <em>"Say: 7 Crimson Falcon 4"</em>) paired with local OpenAI Whisper transcription. Spoken text is compared using SequenceMatcher string similarity to defeat pre-recorded physical replay clips.
-              </p>
-              <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--color-success)' }}>
-                Requires phrase similarity ≥ 0.60
-              </div>
-            </div>
-
-            <div className="saas-card" style={{ marginBottom: 0 }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-warning)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                PILLAR 4
-              </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
-                EMA Adaptive Voiceprints
-              </h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '1rem' }}>
-                Exponential Moving Average voiceprint updates (α = 0.20) automatically adjust stored voiceprints after every successful authentication: <code>New = 0.8 × Old + 0.2 × Current</code>. Defeats template aging gracefully.
-              </p>
-              <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--color-warning)' }}>
-                Applied strictly upon full ACCEPT
-              </div>
+            <div style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => onNavigate('workflow')}
+                className="btn btn-secondary"
+                style={{ fontSize: '0.88rem' }}
+              >
+                Inspect Detailed 6-Stage Workflow Logic →
+              </button>
+              <button
+                onClick={() => onNavigate('app')}
+                className="btn btn-primary"
+                style={{ fontSize: '0.88rem' }}
+              >
+                Test Pipeflow in Live Application →
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Engineering Methodology Section */}
-      <section style={{ padding: '4rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
+      {/* 5. ENGINEERING METHODOLOGY */}
+      <section style={{ padding: '4.5rem 1.5rem', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span className="section-eyebrow">Research & Technical Workflow</span>
@@ -415,14 +389,14 @@ export default function HomePage({ onNavigate }) {
         </div>
       </section>
 
-      {/* Novelty Comparison Matrix */}
-      <section style={{ padding: '4rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
+      {/* 6. NOVELTY & COMPETITIVE ADVANTAGE */}
+      <section style={{ padding: '4.5rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span className="section-eyebrow">Academic Differentiation</span>
-            <h2 className="section-title">Novelty & Competitive Comparison</h2>
+            <h2 className="section-title">Novelty & Competitive Advantage</h2>
             <p className="section-subtitle">
-              How AAA Engine advances beyond existing commercial and academic benchmarks.
+              How AAA Engine advances beyond existing commercial and academic biometric benchmarks.
             </p>
           </div>
 
@@ -453,52 +427,91 @@ export default function HomePage({ onNavigate }) {
         </div>
       </section>
 
-      {/* Project Team & Guide Credit */}
-      <section style={{ padding: '3.5rem 1.5rem', background: 'var(--color-surface)' }}>
+      {/* 7. PROJECT DETAILS & ACADEMIC SUPERVISION */}
+      <section style={{ padding: '4rem 1.5rem', background: 'var(--color-surface)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ flex: '1 1 500px' }}>
-              <span className="section-eyebrow">Academic Supervision</span>
-              <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                {PROJECT.institution}
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <span className="section-eyebrow">Project Identity & Supervision</span>
+            <h2 className="section-title">Project Details & Institutional Authority</h2>
+            <p className="section-subtitle">
+              Department of Computer Science & Engineering, Amrita School of Computing, Amrita Vishwa Vidyapeetham
+            </p>
+          </div>
+
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+              color: '#ffffff',
+              borderRadius: 'var(--radius-xl)',
+              padding: '2.5rem',
+              boxShadow: 'var(--shadow-lg)',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: '2.5rem',
+              alignItems: 'center',
+            }}
+          >
+            <div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
+                ACADEMIC ENGINEERING PROJECT
+              </div>
+              <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.5rem' }}>
+                {PROJECT.fullName}
               </h3>
-              <p style={{ fontSize: '0.92rem', color: 'var(--color-text-muted)', marginBottom: '1rem', lineHeight: 1.6 }}>
-                Developed as part of <strong>{PROJECT.course}</strong> by <strong>{PROJECT.teamNumber}</strong> under the faculty guidance of <strong>{PROJECT.guide.name}</strong>, {PROJECT.guide.title}.
+              <div style={{ fontSize: '1rem', color: '#cbd5e1', marginBottom: '0.25rem' }}>
+                Course: <strong>{PROJECT.course}</strong> • <strong>{PROJECT.teamNumber}</strong>
+              </div>
+              <div style={{ fontSize: '0.95rem', color: '#94a3b8', marginBottom: '1.25rem' }}>
+                {PROJECT.institution}
+              </div>
+              <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.6, maxWidth: '520px' }}>
+                Conducted by Team 90 under the faculty guidance of <strong>{PROJECT.guide.name}</strong>, Associate Professor. A production-ready voice authentication middleware engineered against modern acoustic spoofing and neural voice cloning.
               </p>
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button onClick={() => onNavigate('team')} className="btn btn-secondary" style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
-                  Meet the Full Team & Roles →
+              <div style={{ display: 'flex', gap: '10px', marginTop: '1.25rem' }}>
+                <button
+                  onClick={() => onNavigate('team')}
+                  className="btn btn-primary"
+                  style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                >
+                  Meet Full Team & Roles →
                 </button>
-                <button onClick={() => onNavigate('docs')} className="btn btn-secondary" style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
-                  Read Technical Docs →
+                <button
+                  onClick={() => onNavigate('docs')}
+                  className="btn btn-secondary"
+                  style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.1)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.2)' }}
+                >
+                  Technical Documentation →
                 </button>
               </div>
             </div>
 
             <div
               style={{
-                flex: '0 1 360px',
-                background: '#ffffff',
-                border: '1px solid var(--color-border)',
+                background: 'rgba(255, 255, 255, 0.05)',
                 borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-                boxShadow: 'var(--shadow-sm)',
+                padding: '1.75rem',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
               }}
             >
-              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.25rem' }}>
                 Faculty Project Guide
               </div>
-              <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-primary)', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.25rem' }}>
                 {PROJECT.guide.name}
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+              <div style={{ fontSize: '0.88rem', color: '#38bdf8', marginBottom: '0.25rem' }}>
                 {PROJECT.guide.title}
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                {PROJECT.guide.institution}
+              <div style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                Department of Computer Science & Engineering
               </div>
-              <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--color-border)', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                Team Members: Nandan Reddy • Navadeep Kumar • Parise Aditya • Surya • Karthik Srijan
+              <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0.75rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, marginBottom: '0.4rem' }}>
+                  Student Engineering Team
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.6 }}>
+                  M Nandan Reddy • M Navadeep Kumar • Parise Aditya • AVKB Surya • M Karthik Srijan
+                </div>
               </div>
             </div>
           </div>
