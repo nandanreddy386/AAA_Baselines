@@ -1,269 +1,250 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import { checkServerHealth } from '../utils/apiClient';
+import { PROJECT } from '../data/projectData';
 
-const NAV_LINKS = [
-  { label: 'Home', href: '#home' },
-  { label: 'Problem', href: '#problem' },
-  { label: 'Objectives', href: '#objectives' },
-  { label: 'Methodology', href: '#methodology' },
-  { label: 'Architecture', href: '#architecture' },
-  { label: 'Tech Stack', href: '#techstack' },
-  { label: 'Progress', href: '#progress' },
-  { label: 'Team', href: '#team' },
-  { label: 'Novelty', href: '#novelty' },
-  { label: 'API', href: '#api' },
-  { label: 'Database', href: '#database' },
-  { label: 'GitHub', href: '#github' },
-  { label: 'Demos', href: '#demos' },
-  { label: 'References', href: '#references' },
-];
-
-const Header = () => {
+export default function Header({ activePage, onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
-  const [isMobile, setIsMobile] = useState(false);
-  const observerRef = useRef(null);
+  const [isServerLive, setIsServerLive] = useState(false);
 
-  // Responsive check
+  const NAV_ITEMS = [
+    { id: 'home', label: 'Home' },
+    { id: 'app', label: 'Live Application', badge: 'Interactive' },
+    { id: 'workflow', label: 'Auth Workflow' },
+    { id: 'architecture', label: 'Architecture' },
+    { id: 'docs', label: 'API & Tech Docs' },
+    { id: 'team', label: 'Status & Team' },
+  ];
+
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    checkServerHealth().then(setIsServerLive);
+    const interval = setInterval(() => {
+      checkServerHealth().then(setIsServerLive);
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
 
-  // IntersectionObserver for active section highlighting
-  useEffect(() => {
-    const sectionIds = NAV_LINKS.map((l) => l.href.replace('#', ''));
-    const handleIntersect = (entries) => {
-      const visible = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-      if (visible.length > 0) {
-        setActiveSection(visible[0].target.id);
-      }
-    };
-
-    observerRef.current = new IntersectionObserver(handleIntersect, {
-      rootMargin: '-80px 0px -60% 0px',
-      threshold: 0.1,
-    });
-
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observerRef.current.observe(el);
-    });
-
-    return () => {
-      if (observerRef.current) observerRef.current.disconnect();
-    };
-  }, []);
-
-  const handleNavClick = useCallback(
-    (e, href) => {
-      e.preventDefault();
-      const id = href.replace('#', '');
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        setActiveSection(id);
-      }
-      if (menuOpen) setMenuOpen(false);
-    },
-    [menuOpen]
-  );
-
-  // Close mobile menu on Escape
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape') setMenuOpen(false);
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, []);
-
-  /* ---- styles ---- */
-  const styles = {
-    header: {
-      position: 'sticky',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: 'var(--header-height, 64px)',
-      background: 'var(--color-surface, #ffffff)',
-      borderBottom: '1px solid var(--color-border, #e2e8f0)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 clamp(1rem, 3vw, 2.5rem)',
-      zIndex: 100,
-      boxSizing: 'border-box',
-      fontFamily: 'inherit',
-    },
-    logo: {
-      fontWeight: 700,
-      fontSize: '1.25rem',
-      color: 'var(--color-primary, #2563eb)',
-      letterSpacing: '-0.02em',
-      textDecoration: 'none',
-      flexShrink: 0,
-      cursor: 'pointer',
-    },
-    desktopNav: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.15rem',
-      overflowX: 'auto',
-      scrollbarWidth: 'none',
-      msOverflowStyle: 'none',
-    },
-    navLink: (isActive) => ({
-      padding: '0.35rem 0.6rem',
-      fontSize: '0.82rem',
-      fontWeight: isActive ? 600 : 500,
-      color: isActive
-        ? 'var(--color-primary, #2563eb)'
-        : 'var(--color-text, #1e293b)',
-      textDecoration: 'none',
-      borderRadius: '6px',
-      background: isActive ? 'rgba(37,99,235,0.08)' : 'transparent',
-      transition: 'color 0.2s, background 0.2s',
-      whiteSpace: 'nowrap',
-      cursor: 'pointer',
-    }),
-    hamburger: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: '5px',
-      width: '36px',
-      height: '36px',
-      background: 'none',
-      border: 'none',
-      cursor: 'pointer',
-      padding: 0,
-      zIndex: 110,
-      flexShrink: 0,
-    },
-    hamburgerLine: (open, index) => {
-      const base = {
-        width: '22px',
-        height: '2px',
-        background: 'var(--color-text, #1e293b)',
-        borderRadius: '2px',
-        transition: 'transform 0.3s ease, opacity 0.2s ease',
-        transformOrigin: 'center',
-      };
-      if (open && index === 0)
-        return { ...base, transform: 'translateY(7px) rotate(45deg)' };
-      if (open && index === 1) return { ...base, opacity: 0 };
-      if (open && index === 2)
-        return { ...base, transform: 'translateY(-7px) rotate(-45deg)' };
-      return base;
-    },
-    mobileMenu: (open) => ({
-      position: 'absolute',
-      top: 'var(--header-height, 64px)',
-      left: 0,
-      right: 0,
-      background: 'var(--color-surface, #ffffff)',
-      borderBottom: '1px solid var(--color-border, #e2e8f0)',
-      boxShadow: open ? '0 8px 24px rgba(0,0,0,0.08)' : 'none',
-      maxHeight: open ? '80vh' : '0',
-      overflow: open ? 'auto' : 'hidden',
-      transition: 'max-height 0.35s ease, box-shadow 0.3s ease',
-      zIndex: 99,
-      display: 'flex',
-      flexDirection: 'column',
-      padding: open ? '0.5rem 0' : '0',
-    }),
-    mobileNavLink: (isActive) => ({
-      padding: '0.75rem 1.5rem',
-      fontSize: '0.95rem',
-      fontWeight: isActive ? 600 : 500,
-      color: isActive
-        ? 'var(--color-primary, #2563eb)'
-        : 'var(--color-text, #1e293b)',
-      textDecoration: 'none',
-      background: isActive ? 'rgba(37,99,235,0.06)' : 'transparent',
-      transition: 'color 0.2s, background 0.2s',
-    }),
+  const handleNavClick = (id) => {
+    onNavigate(id);
+    setMenuOpen(false);
   };
 
   return (
-    <header style={styles.header}>
-      <a
-        href="#home"
-        style={styles.logo}
-        onClick={(e) => handleNavClick(e, '#home')}
-        aria-label="AAA Engine — Home"
+    <header
+      style={{
+        position: 'sticky',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '68px',
+        background: '#ffffff',
+        borderBottom: '1px solid var(--color-border)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 clamp(1rem, 3vw, 2.5rem)',
+        zIndex: 1000,
+        boxShadow: 'var(--shadow-sm)',
+      }}
+    >
+      {/* Brand & Logo */}
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+        onClick={() => handleNavClick('home')}
       >
-        AAA Engine
-      </a>
+        <div
+          style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%)',
+            color: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            fontWeight: 800,
+            boxShadow: '0 4px 10px rgba(37, 99, 235, 0.3)',
+          }}
+        >
+          🛡️
+        </div>
+        <div>
+          <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-text)', lineHeight: 1.15 }}>
+            AAA Engine
+          </div>
+          <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+            Adaptive Acoustic Auth
+          </div>
+        </div>
+      </div>
 
-      {isMobile ? (
-        <>
-          <button
-            style={styles.hamburger}
-            onClick={() => setMenuOpen((p) => !p)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-          >
-            <span style={styles.hamburgerLine(menuOpen, 0)} />
-            <span style={styles.hamburgerLine(menuOpen, 1)} />
-            <span style={styles.hamburgerLine(menuOpen, 2)} />
-          </button>
-          <nav style={styles.mobileMenu(menuOpen)} aria-label="Main navigation">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                style={styles.mobileNavLink(activeSection === link.href.replace('#', ''))}
-                onClick={(e) => handleNavClick(e, link.href)}
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </>
-      ) : (
-        <nav style={styles.desktopNav} aria-label="Main navigation">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              style={styles.navLink(activeSection === link.href.replace('#', ''))}
-              onClick={(e) => handleNavClick(e, link.href)}
-              onMouseEnter={(e) => {
-                if (activeSection !== link.href.replace('#', '')) {
-                  e.currentTarget.style.background = 'rgba(37,99,235,0.05)';
-                  e.currentTarget.style.color = 'var(--color-primary, #2563eb)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                const isActive = activeSection === link.href.replace('#', '');
-                e.currentTarget.style.background = isActive
-                  ? 'rgba(37,99,235,0.08)'
-                  : 'transparent';
-                e.currentTarget.style.color = isActive
-                  ? 'var(--color-primary, #2563eb)'
-                  : 'var(--color-text, #1e293b)';
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.outline = '2px solid var(--color-primary, #2563eb)';
-                e.currentTarget.style.outlineOffset = '2px';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.outline = 'none';
+      {/* Desktop Navigation Links */}
+      <nav
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
+        className="hide-on-mobile"
+      >
+        {NAV_ITEMS.map((item) => {
+          const isActive = activePage === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleNavClick(item.id)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.85rem',
+                fontWeight: isActive ? 700 : 500,
+                color: isActive ? 'var(--color-primary)' : 'var(--color-text)',
+                background: isActive ? 'var(--color-primary-light)' : 'transparent',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
-              {link.label}
-            </a>
+              <span>{item.label}</span>
+              {item.badge && (
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    padding: '1px 6px',
+                    borderRadius: '10px',
+                    background: isActive ? 'var(--color-primary)' : 'var(--color-primary-light)',
+                    color: isActive ? '#ffffff' : 'var(--color-primary)',
+                  }}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Right Action Group: Server Status & GitHub */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Backend health status badge */}
+        <div
+          title={isServerLive ? 'FastAPI server online at http://localhost:8000' : 'Offline demo mode active'}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            padding: '4px 10px',
+            borderRadius: '12px',
+            background: isServerLive ? 'var(--color-success-light)' : '#fef3c7',
+            color: isServerLive ? 'var(--color-success)' : '#d97706',
+            border: `1px solid ${isServerLive ? 'var(--color-success)' : '#fde68a'}`,
+          }}
+          className="hide-on-mobile"
+        >
+          <span
+            style={{
+              width: '7px',
+              height: '7px',
+              borderRadius: '50%',
+              background: isServerLive ? 'var(--color-success)' : '#f59e0b',
+            }}
+          />
+          <span>{isServerLive ? 'API: Live' : 'Client Mode'}</span>
+        </div>
+
+        <a
+          href={PROJECT.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-secondary"
+          style={{
+            padding: '0.45rem 0.85rem',
+            fontSize: '0.82rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+          </svg>
+          <span className="hide-on-mobile">GitHub</span>
+        </a>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="show-on-mobile"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '6px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '5px',
+          }}
+          aria-label="Toggle navigation menu"
+        >
+          <span style={{ width: '22px', height: '2px', background: 'var(--color-text)', borderRadius: '2px' }} />
+          <span style={{ width: '22px', height: '2px', background: 'var(--color-text)', borderRadius: '2px' }} />
+          <span style={{ width: '22px', height: '2px', background: 'var(--color-text)', borderRadius: '2px' }} />
+        </button>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {menuOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '68px',
+            left: 0,
+            right: 0,
+            background: '#ffffff',
+            borderBottom: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-lg)',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '1rem',
+            gap: '6px',
+            zIndex: 999,
+          }}
+        >
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleNavClick(item.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.75rem 1rem',
+                fontSize: '0.95rem',
+                fontWeight: activePage === item.id ? 700 : 500,
+                color: activePage === item.id ? 'var(--color-primary)' : 'var(--color-text)',
+                background: activePage === item.id ? 'var(--color-primary-light)' : 'transparent',
+                borderRadius: '8px',
+                border: 'none',
+                textAlign: 'left',
+                cursor: 'pointer',
+              }}
+            >
+              <span>{item.label}</span>
+              {item.badge && (
+                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', background: 'var(--color-primary)', color: '#fff' }}>
+                  {item.badge}
+                </span>
+              )}
+            </button>
           ))}
-        </nav>
+        </div>
       )}
     </header>
   );
-};
-
-export default Header;
+}
