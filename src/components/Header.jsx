@@ -8,10 +8,11 @@ export default function Header({ activePage, onNavigate }) {
 
   const NAV_ITEMS = [
     { id: 'home', label: 'Home' },
-    { id: 'app', label: 'Live Application', badge: 'Interactive' },
+    { id: 'app', label: 'Live App', badge: 'Interactive' },
+    { id: 'demos', label: 'Demo Videos' },
     { id: 'workflow', label: 'Auth Workflow' },
     { id: 'architecture', label: 'Architecture' },
-    { id: 'docs', label: 'API & Tech Docs' },
+    { id: 'docs', label: 'API & Docs' },
     { id: 'team', label: 'Status & Team' },
   ];
 
@@ -97,8 +98,8 @@ export default function Header({ activePage, onNavigate }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '0.45rem 0.85rem',
-                fontSize: '0.85rem',
+                padding: '0.45rem 0.75rem',
+                fontSize: '0.84rem',
                 fontWeight: isActive ? 700 : 500,
                 color: isActive ? 'var(--color-primary)' : 'var(--color-text)',
                 background: isActive ? 'var(--color-primary-light)' : 'transparent',

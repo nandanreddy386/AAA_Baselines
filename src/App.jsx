@@ -3,12 +3,13 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import LiveAppPage from './pages/LiveAppPage';
+import DemosPage from './pages/DemosPage';
 import WorkflowPage from './pages/WorkflowPage';
 import ArchitecturePage from './pages/ArchitecturePage';
 import ApiDocsPage from './pages/ApiDocsPage';
 import StatusTeamPage from './pages/StatusTeamPage';
 
-const VALID_PAGES = ['home', 'app', 'workflow', 'architecture', 'docs', 'team'];
+const VALID_PAGES = ['home', 'app', 'demos', 'workflow', 'architecture', 'docs', 'team'];
 
 function getPageFromHash() {
   const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
@@ -59,6 +60,7 @@ export default function App() {
       <main style={{ flex: 1 }}>
         {activePage === 'home' && <HomePage onNavigate={navigateTo} />}
         {activePage === 'app' && <LiveAppPage />}
+        {activePage === 'demos' && <DemosPage onNavigate={navigateTo} />}
         {activePage === 'workflow' && <WorkflowPage onNavigate={navigateTo} />}
         {activePage === 'architecture' && <ArchitecturePage onNavigate={navigateTo} />}
         {activePage === 'docs' && <ApiDocsPage />}

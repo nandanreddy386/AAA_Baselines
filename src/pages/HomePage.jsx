@@ -158,6 +158,81 @@ export default function HomePage({ onNavigate }) {
         </div>
       </section>
 
+      {/* Project Objectives Section */}
+      <section style={{ padding: '4rem 1.5rem', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
+        <div className="container" style={{ maxWidth: '1100px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <span className="section-eyebrow">Project Goals & Scope</span>
+            <h2 className="section-title">Project Objectives</h2>
+            <p className="section-subtitle">
+              Formal academic and technical engineering objectives established for the AAA Engine platform.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.5rem' }}>
+            <div className="saas-card" style={{ marginBottom: 0 }}>
+              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🎙️</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                1. Robust Speaker Verification
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Extract 192-dimensional acoustic speaker embeddings via SpeechBrain ECAPA-TDNN and verify against stored enrolled voiceprints using clamped cosine similarity with an Equal Error Rate target below 0.87%.
+              </p>
+            </div>
+
+            <div className="saas-card" style={{ marginBottom: 0 }}>
+              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🛡️</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                2. Deepfake & Audio Anti-Spoofing
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Deploy a Wav2Vec2 audio classification gate prior to speaker verification to detect synthetic speech, neural vocoder artifacts, and replay attacks, rejecting fraudulent attempts before identity matching.
+              </p>
+            </div>
+
+            <div className="saas-card" style={{ marginBottom: 0 }}>
+              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🔐</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                3. Challenge-Response Active Liveness
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Issue randomized challenge phrases combined with cryptographic HMAC-SHA256 tokens (strict 90s TTL, single-use consumption) and verify spoken phrases via Whisper ASR to neutralize replay injection.
+              </p>
+            </div>
+
+            <div className="saas-card" style={{ marginBottom: 0 }}>
+              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🔄</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                4. Continuous Voiceprint Adaptation
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Implement an Exponential Moving Average algorithm (α = 0.20) that smoothly updates stored voiceprints upon authentic verification to counteract natural biological voice drift without compromising security.
+              </p>
+            </div>
+
+            <div className="saas-card" style={{ marginBottom: 0 }}>
+              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>⚡</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                5. Plug-and-Play Middleware API
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Package the authentication cascade as high-concurrency asynchronous FastAPI REST routes with Docker containerization, allowing seamless drop-in integration into banking and enterprise applications.
+              </p>
+            </div>
+
+            <div className="saas-card" style={{ marginBottom: 0 }}>
+              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>📊</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                6. Forensic Auditing & Traceability
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Persist detailed forensic metrics for every attempt in PostgreSQL, recording layer failure codes, deepfake confidence scores, similarity metrics, and challenge timestamps for compliance audits.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Problem Statement Section */}
       <section style={{ padding: '4rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
@@ -292,6 +367,50 @@ export default function HomePage({ onNavigate }) {
                 Applied strictly upon full ACCEPT
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Engineering Methodology Section */}
+      <section style={{ padding: '4rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
+        <div className="container" style={{ maxWidth: '1100px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <span className="section-eyebrow">Research & Technical Workflow</span>
+            <h2 className="section-title">Project Methodology</h2>
+            <p className="section-subtitle">
+              Systematic 6-step engineering methodology guiding the design, implementation, and empirical validation of AAA Engine.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            {[
+              { step: '01', title: 'Data Pipeline & Standardisation', desc: 'Audio normalization to 16kHz mono WAV, silence trimming with librosa, in-browser Web Audio API resampling, and feature extraction.' },
+              { step: '02', title: 'Layer 1 ECAPA-TDNN Modeling', desc: 'Pretrained SpeechBrain 192-dim embedding extraction with attentive statistics pooling, Windows LocalStrategy deployment, and cosine similarity tuning.' },
+              { step: '03', title: 'Layer 2 Anti-Spoofing Integration', desc: 'Deploying Hugging Face wav2vec2 binary audio classification as an immediate defensive barrier preceding identity verification.' },
+              { step: '04', title: 'Layer 3 Cryptographic Tokens & ASR', desc: 'HMAC-SHA256 URL-safe token signing with 90s TTL, randomized phrase generation, and Whisper ASR string similarity matching.' },
+              { step: '05', title: 'Adaptive Voiceprint Management', desc: 'Developing the Exponential Moving Average (EMA α = 0.20) formulation to continuously track natural biological voice drift upon authentic logins.' },
+              { step: '06', title: 'API Middleware & Full Stack Portal', desc: 'FastAPI async pipeline wiring, PostgreSQL ORM persistence, Docker containerization, and React SaaS client evaluation.' },
+            ].map((m, i) => (
+              <div key={i} className="saas-card" style={{ marginBottom: 0, padding: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.75rem' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 800, background: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '3px 8px', borderRadius: '6px' }}>
+                    STEP {m.step}
+                  </span>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text)' }}>
+                    {m.title}
+                  </h3>
+                </div>
+                <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                  {m.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: 'center' }}>
+            <button onClick={() => onNavigate('workflow')} className="btn btn-secondary" style={{ fontSize: '0.9rem' }}>
+              Inspect Detailed Authentication Workflow Diagram →
+            </button>
           </div>
         </div>
       </section>
