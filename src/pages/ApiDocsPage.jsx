@@ -20,7 +20,7 @@ export default function ApiDocsPage() {
         <span className="section-eyebrow">RESTful Middleware Specification</span>
         <h1 className="section-title">API Documentation & Contract</h1>
         <p className="section-subtitle">
-          Complete REST API documentation matching backend/app/main.py and docs/00_SHARED_CONTRACT.md.
+          The versioned /v1 contract from the final report (Table 6). Responses carry decisions and public reason codes, never scores. The legacy /auth/* routes remain only as deprecated aliases.
         </p>
       </div>
 
@@ -181,7 +181,7 @@ export default function ApiDocsPage() {
             <div style={{ marginTop: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-danger)', textTransform: 'uppercase' }}>
-                  Sample Error Response (HTTP Rejection)
+                  Sample Refusal (DENY on replay)
                 </span>
               </div>
               <pre className="light-inspector-box" style={{ marginTop: 0, color: '#fca5a5' }}>

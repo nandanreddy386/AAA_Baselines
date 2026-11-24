@@ -8,6 +8,9 @@ import {
   verifyVoice,
   getVoiceprintHistory,
   getAuthLogs,
+  SIM_SCENARIOS,
+  DECISION_INFO,
+  REASON_INFO,
 } from '../utils/apiClient';
 import { convertBlobTo16kHzWav } from '../utils/audioEncoder';
 
@@ -542,7 +545,7 @@ function EnrollView({ activeUser, useLive, onComplete }) {
         setEnrollmentComplete(true);
         setStatusMsg({
           type: 'success',
-          text: `Voiceprint enrollment complete! Extracted 192-dim ECAPA-TDNN embedding across all 3 acoustic samples.`,
+          text: `Voiceprint enrollment complete! A 192-dim ECAPA-TDNN voiceprint is stored, encrypted at rest with AES-256-GCM.`,
         });
       }
     } catch (err) {
@@ -556,7 +559,7 @@ function EnrollView({ activeUser, useLive, onComplete }) {
     <div className="saas-card">
       <div className="card-title-lg">Speaker Voiceprint Enrollment</div>
       <div className="card-subtitle-text">
-        Record 3 audio samples (min 3-5s) to extract ECAPA-TDNN 192-dim acoustic embeddings (Endpoint: <code>POST /auth/enroll</code>)
+        Record 3 consented samples (16 kHz mono WAV, 2-10 s each). Each is quality-checked, embedded with ECAPA-TDNN (192-dim) and stored encrypted (Endpoint: <code>POST /v1/enroll</code>)
       </div>
 
       {!activeUser ? (
@@ -697,7 +700,8 @@ function VerifyView({ activeUser, useLive, onComplete }) {
   const [verifying, setVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState(null);
   const [statusMsg, setStatusMsg] = useState(null);
-  const [simulateSpoof, setSimulateSpoof] = useState(false);
+  const [scenario, setScenario] = useState('genuine');
+  const [usedToken, setUsedToken] = useState(null);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -788,11 +792,26 @@ function VerifyView({ activeUser, useLive, onComplete }) {
     clearInterval(timerRef.current);
 
     try {
-      const res = await verifyVoice(activeUser.id, challenge.token, audioBlob, useLive, simulateSpoof);
+      const res = await verifyVoice(activeUser.id, challenge.token, audioBlob, useLive, scenario);
       setVerifyResult(res);
+      setUsedToken({ token: challenge.token, audio: audioBlob });
       setChallenge(null);
     } catch (err) {
       setStatusMsg({ type: 'error', text: err.message || 'Verification pipeline failed' });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  // Re-submit the token that was just used: the engine must refuse it (report Listing 9)
+  const replayLastToken = async () => {
+    if (!usedToken) return;
+    setVerifying(true);
+    try {
+      const res = await verifyVoice(activeUser.id, usedToken.token, usedToken.audio, useLive, scenario);
+      setVerifyResult(res);
+    } catch (err) {
+      setStatusMsg({ type: 'error', text: err.message || 'Replay attempt failed' });
     } finally {
       setVerifying(false);
     }
@@ -802,7 +821,7 @@ function VerifyView({ activeUser, useLive, onComplete }) {
     <div className="saas-card">
       <div className="card-title-lg">Adaptive Authentication Protocol</div>
       <div className="card-subtitle-text">
-        Deepfake Detection (L2) → Phrase Match (ASR) → Speaker Verification (L1) → Single-Use Token Check (L3)
+        Single-use challenge consumed atomically → Deepfake gate (AD) ∥ Exact phrase gate (ASR) → Speaker gate (SV) → one Policy Engine decision
       </div>
 
       {!activeUser ? (
@@ -827,13 +846,19 @@ function VerifyView({ activeUser, useLive, onComplete }) {
             </div>
 
             {!useLive && (
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-danger)', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={simulateSpoof}
-                  onChange={(e) => setSimulateSpoof(e.target.checked)}
-                />
-                Simulate Synthetic Deepfake Attack (Test Layer 2 Block)
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
+                Simulated attempt:
+                <select
+                  value={scenario}
+                  onChange={(e) => setScenario(e.target.value)}
+                  style={{ padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '0.82rem' }}
+                >
+                  {SIM_SCENARIOS.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label} → {s.expect}
+                    </option>
+                  ))}
+                </select>
               </label>
             )}
           </div>
@@ -877,7 +902,7 @@ function VerifyView({ activeUser, useLive, onComplete }) {
                   </span>
                   <span>•</span>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>
-                    HMAC: {challenge.token.substring(0, 16)}...
+                    Signed token: {challenge.token.substring(0, 16)}… (single use)
                   </span>
                 </div>
               </div>
@@ -900,7 +925,7 @@ function VerifyView({ activeUser, useLive, onComplete }) {
                 {isRecording
                   ? 'Stop & Submit Spoken Response'
                   : verifying
-                  ? 'Processing L2 → ASR → L1 → L3 Pipeline...'
+                  ? 'Running AD ∥ ASR → SV → Policy Engine...'
                   : 'Speak Challenge Phrase & Authenticate'}
               </button>
             </div>
@@ -924,140 +949,96 @@ function VerifyView({ activeUser, useLive, onComplete }) {
           )}
 
           {verifyResult && (
-            <div className={`light-decision-card ${verifyResult.result}`}>
+            <div className={`light-decision-card ${verifyResult.decision}`}>
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: '1.25rem',
+                  flexWrap: 'wrap',
+                  gap: '0.75rem',
+                  marginBottom: '1rem',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <span className={`badge-decision-light ${verifyResult.result}`}>
-                    {verifyResult.result}
+                  <span className={`badge-decision-light ${verifyResult.decision}`}>
+                    {verifyResult.decision}
                   </span>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-text)' }}>
-                    {verifyResult.reason}
+                  <span style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text)' }}>
+                    {REASON_INFO[verifyResult.reason_public] || verifyResult.reason_public}
                   </span>
                 </div>
-
-                {verifyResult.layer_blocked && (
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.85rem',
-                      color: 'var(--color-danger)',
-                      fontWeight: 700,
-                    }}
-                  >
-                    Blocked at Layer {verifyResult.layer_blocked}
-                  </div>
-                )}
+                <code style={{ fontSize: '0.8rem', fontWeight: 700 }}>reason: {verifyResult.reason_public}</code>
               </div>
 
-              <div className="saas-metrics-grid">
-                <div className="saas-stat-card">
-                  <div className="saas-stat-label">L2 Deepfake Label</div>
-                  <div
-                    className="saas-stat-val"
-                    style={{
-                      color: verifyResult.l2_label === 'spoof' ? 'var(--color-danger)' : 'var(--color-success)',
-                    }}
-                  >
-                    {verifyResult.l2_label?.toUpperCase() || 'BONAFIDE'}
-                  </div>
-                </div>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+                {DECISION_INFO[verifyResult.decision]}
+              </p>
 
-                <div className="saas-stat-card">
-                  <div className="saas-stat-label">L2 Spoof Confidence</div>
-                  <div className="saas-stat-val">
-                    {(verifyResult.l2_confidence * 100).toFixed(1)}%
-                  </div>
+              {verifyResult._demo_trace && (
+                <div className="saas-metrics-grid">
+                  {Object.entries(verifyResult._demo_trace).map(([gate, outcome]) => (
+                    <div className="saas-stat-card" key={gate}>
+                      <div className="saas-stat-label">{gate === 'challenge' ? 'Challenge' : `${gate} gate`}</div>
+                      <div
+                        className="saas-stat-val"
+                        style={{
+                          fontSize: '1rem',
+                          color: /FAIL|timeout|used|expired|invalid/i.test(outcome)
+                            ? 'var(--color-danger)'
+                            : /MARGINAL/.test(outcome)
+                            ? 'var(--color-warning)'
+                            : 'var(--color-success)',
+                        }}
+                      >
+                        {outcome}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-
-                <div className="saas-stat-card">
-                  <div className="saas-stat-label">L1 Speaker Similarity</div>
-                  <div className="saas-stat-val" style={{ color: 'var(--color-primary)' }}>
-                    {(verifyResult.l1_score * 100).toFixed(1)}%
-                  </div>
-                </div>
-
-                <div className="saas-stat-card">
-                  <div className="saas-stat-label">L3 ASR Phrase Match</div>
-                  <div
-                    className="saas-stat-val"
-                    style={{
-                      color: verifyResult.asr_similarity >= 0.6 ? 'var(--color-success)' : 'var(--color-danger)',
-                    }}
-                  >
-                    {verifyResult.asr_similarity != null
-                      ? `${(verifyResult.asr_similarity * 100).toFixed(1)}%`
-                      : 'N/A'}
-                  </div>
-                </div>
-              </div>
-
-              {verifyResult.asr_transcript && (
-                <div
-                  style={{
-                    marginTop: '1rem',
-                    padding: '0.75rem 1rem',
-                    background: 'var(--color-surface)',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      color: 'var(--color-text-muted)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      marginBottom: '0.35rem',
-                    }}
-                  >
-                    ASR Transcription (Whisper)
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.9rem', color: 'var(--color-text)' }}>
-                    "{verifyResult.asr_transcript}"
-                  </div>
+              )}
+              {verifyResult._demo_trace && (
+                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
+                  Gate trace is shown for teaching only. The real engine returns the decision and public reason, never gate scores.
                 </div>
               )}
 
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: '1.5rem',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    color: 'var(--color-text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.8px',
-                  }}
-                >
-                  POST /auth/verify Full REST Response JSON
-                </div>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '1.25rem' }}>
+                {usedToken && (
+                  <button className="btn btn-secondary" onClick={replayLastToken} disabled={verifying}>
+                    Replay the same token (should be refused)
+                  </button>
+                )}
+                <button className="btn btn-secondary" onClick={fetchNewChallenge} disabled={loadingChallenge}>
+                  Request fresh challenge
+                </button>
                 {onComplete && (
-                  <button
-                    className="btn btn-primary"
-                    style={{ padding: '0.45rem 0.9rem', fontSize: '0.82rem' }}
-                    onClick={onComplete}
-                  >
-                    Proceed to Analytics →
+                  <button className="btn btn-primary" onClick={onComplete}>
+                    Proceed to Audit Log →
                   </button>
                 )}
               </div>
 
-              <pre className="light-inspector-box">{JSON.stringify(verifyResult, null, 2)}</pre>
+              <div
+                style={{
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.8px',
+                  marginTop: '1.5rem',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                POST /v1/verify response (public fields only, no scores)
+              </div>
+              <pre className="light-inspector-box">
+                {JSON.stringify(
+                  Object.fromEntries(Object.entries(verifyResult).filter(([k]) => !k.startsWith('_'))),
+                  null,
+                  2
+                )}
+              </pre>
             </div>
           )}
         </>
@@ -1090,9 +1071,9 @@ function DashboardView({ activeUser, useLive }) {
 
   return (
     <div className="saas-card">
-      <div className="card-title-lg">Biometric Voiceprint Analytics & Forensic Audit Logs</div>
+      <div className="card-title-lg">Voiceprint Adaptation & Audit Trail</div>
       <div className="card-subtitle-text">
-        Real-time tracking of Exponential Moving Average shifts (New = 0.8 × Old + 0.2 × Current) and forensic attempt logs
+        Guarded EMA updates (0.8 × old + 0.2 × new, only after APPROVE) and an audit log that holds request IDs and public reasons only
       </div>
 
       {!activeUser ? (
@@ -1132,10 +1113,10 @@ function DashboardView({ activeUser, useLive }) {
             <div className="saas-stat-card">
               <div className="saas-stat-label">Voiceprint Sample Count</div>
               <div className="saas-stat-val" style={{ color: 'var(--color-success)', marginTop: '2px' }}>
-                {history.length > 0 ? history[0].sample_count : 3} Samples
+                {history.length > 0 ? history[0].sample_count : activeUser.sample_count || 0} Samples
               </div>
               <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-                Adapted via EMA (α = 0.20)
+                Guarded EMA, only after APPROVE
               </div>
             </div>
 
@@ -1145,15 +1126,20 @@ function DashboardView({ activeUser, useLive }) {
                 192-dim
               </div>
               <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-                SpeechBrain ECAPA-TDNN
+                ECAPA-TDNN, AES-256-GCM at rest
               </div>
             </div>
           </div>
 
           <div style={{ marginBottom: '2.5rem', marginTop: '1.5rem' }}>
             <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-              Voiceprint Adaptation History (GET /users/:id/voiceprint-history)
+              Voiceprint Adaptation History
             </div>
+            {history.length === 0 && (
+              <div style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
+                No enrolment or adaptation events yet for this identity.
+              </div>
+            )}
 
             <div
               style={{
@@ -1189,8 +1175,11 @@ function DashboardView({ activeUser, useLive }) {
                       Update #{history.length - i}
                     </span>
                     <span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-                      Enrolled Samples: <strong style={{ color: 'var(--color-text)' }}>{h.sample_count}</strong>
+                      Samples: <strong style={{ color: 'var(--color-text)' }}>{h.sample_count}</strong>
                     </span>
+                    {h.event && (
+                      <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>{h.event}</span>
+                    )}
                   </div>
 
                   <div
@@ -1210,19 +1199,22 @@ function DashboardView({ activeUser, useLive }) {
 
           <div>
             <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-              Authentication Audit Log Timeline (auth_logs)
+              Authentication Audit Log (public fields only)
             </div>
+            {logs.length === 0 && (
+              <div style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
+                No verification attempts yet. Run one from the Authenticate step.
+              </div>
+            )}
 
             <div style={{ overflowX: 'auto' }}>
               <table className="light-table">
                 <thead>
                   <tr>
                     <th>Timestamp</th>
-                    <th>Result</th>
-                    <th>Blocked Layer</th>
-                    <th>L2 Spoof Conf</th>
-                    <th>L1 Similarity</th>
-                    <th>Audit Reason</th>
+                    <th>Request ID</th>
+                    <th>Decision</th>
+                    <th>Public Reason</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1231,26 +1223,14 @@ function DashboardView({ activeUser, useLive }) {
                       <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
                         {new Date(log.created_at).toLocaleTimeString()}
                       </td>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>
+                        {String(log.id).substring(0, 8)}
+                      </td>
                       <td>
-                        <span className={`badge-tag-light ${log.result}`}>{log.result}</span>
+                        <span className={`badge-tag-light ${log.decision}`}>{log.decision}</span>
                       </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
-                        {log.layer_blocked ? `L${log.layer_blocked}${log.layer_blocked === 4 ? ' (ASR)' : ''}` : '—'}
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.88rem' }}>
-                        {(log.l2_confidence * 100).toFixed(1)}%
-                      </td>
-                      <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '0.88rem',
-                          color: 'var(--color-primary)',
-                        }}
-                      >
-                        {(log.l1_score * 100).toFixed(1)}%
-                      </td>
-                      <td style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
-                        {log.reason}
+                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>
+                        {log.reason_public}
                       </td>
                     </tr>
                   ))}

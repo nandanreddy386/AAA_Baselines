@@ -1,5 +1,5 @@
 import React from 'react';
-import { PROJECT, PIPELINE_LAYERS, NOVELTY_COMPARISON } from '../data/projectData';
+import { PROJECT, PIPELINE_LAYERS, NOVELTY_COMPARISON, KEY_RESULTS } from '../data/projectData';
 
 export default function HomePage({ onNavigate }) {
   return (
@@ -46,7 +46,7 @@ export default function HomePage({ onNavigate }) {
               marginBottom: '1rem',
             }}
           >
-            Adaptive Voice Authentication with{' '}
+            Voice Authentication that{' '}
             <span
               style={{
                 background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)',
@@ -54,7 +54,7 @@ export default function HomePage({ onNavigate }) {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Zero-Trust Deepfake Immunity
+              Turns Away Cloned Voices
             </span>
           </h1>
 
@@ -79,7 +79,7 @@ export default function HomePage({ onNavigate }) {
               margin: '0 auto 1.75rem',
             }}
           >
-            A high-assurance biometric security middleware combining <strong>SpeechBrain ECAPA-TDNN</strong> speaker verification, <strong>Hugging Face Wav2Vec2</strong> audio anti-spoofing, <strong>OpenAI Whisper</strong> dynamic phrase verification, <strong>HMAC-SHA256</strong> cryptographic replay protection, and continuous <strong>Exponential Moving Average (EMA)</strong> voiceprint adaptation.
+            A host application asks the engine for a <strong>signed, single-use, 90-second challenge</strong>. The user speaks it into an <strong>AAA-owned capture component</strong>. A <strong>spoof gate</strong> and an <strong>exact-phrase gate</strong> run in parallel, then a <strong>speaker gate</strong> compares the voice with an <strong>encrypted voiceprint</strong>. One <strong>policy engine</strong> returns a single decision, and any failure leads to a safe refusal. The host never sees raw audio or scores.
           </p>
 
           {/* Project Authority Metadata Pills */}
@@ -145,32 +145,30 @@ export default function HomePage({ onNavigate }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📉</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📞</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                47% of Indian Adults Targeted by Voice Scams
+                Cloned Voices Are Already Stealing Money
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                According to McAfee's global <em>Artificial Imposter</em> study, 47% of surveyed adults in India were directly targeted by AI voice scams, with 83% of victims suffering direct financial loss (averaging ₹50,000+ stolen) through 3-second generative voice clones of family members or banking officials.
+                Zero-shot cloning needs only seconds of reference audio. Our Phase I study collected Indian vishing cases: a teacher in Indore lost Rs. 97,500, a farmer in Roorkee Rs. 6 lakh, and two Hyderabad victims Rs. 1.97 lakh and Rs. 1.4 lakh, each after a call in a familiar voice.
               </p>
             </div>
-
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>⚠️</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔓</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                The Classical Speaker Verification Flaw
+                Passive, Static, Closed Systems
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Conventional speaker recognition architectures (ECAPA-TDNN, x-vectors) only measure acoustic timbre similarity (<em>"Whose voice does this sound like?"</em>). They have zero native ability to differentiate between a live human vocal tract and an AI neural vocoder producing identical timbre.
+                Deployed voice biometrics listen passively, store one frozen voiceprint, cannot tell a live speaker from a synthetic one, can be replayed, and cannot be added to an existing application as middleware.
               </p>
             </div>
-
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔄</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🧩</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                Biological Voice Drift vs. Static Templates
+                A Detector Alone Is Not Enough
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Natural acoustic drift caused by aging, respiratory fatigue, background acoustics, and microphone variance causes static voice templates to fail over time, resulting in false rejection rates exceeding 15% without continuous, verified adaptation.
+                A challenge protocol changes the flow, the spoof verdict depends on who owns the audio path, an evolving template needs controlled write access, and the verdict must be one decision. That is why the gates, policy engine and capture component ship together.
               </p>
             </div>
           </div>
@@ -190,7 +188,7 @@ export default function HomePage({ onNavigate }) {
               PROJECT RESEARCH QUESTION
             </div>
             <div style={{ fontSize: '1.2rem', fontWeight: 600, lineHeight: 1.6, color: '#f8fafc' }}>
-              "How can a modular biometric authentication middleware combine deepfake audio detection, dynamic challenge-response, and continuous voiceprint adaptation to prevent acoustic spoofing without degrading genuine user verification accuracy?"
+              "How can a plug-and-play engine detect AI-generated speech, enforce live human verification and adapt to natural voice variation without requiring changes to the host system?"
             </div>
           </div>
         </div>
@@ -203,68 +201,72 @@ export default function HomePage({ onNavigate }) {
             <span className="section-eyebrow">Project Goals & Scope</span>
             <h2 className="section-title">Project Objectives</h2>
             <p className="section-subtitle">
-              Formal technical and security engineering objectives established for the AAA Engine project.
+              The seven objectives set in the final report, each verified in the testing and traceability sections.
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.5rem' }}>
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🎙️</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔌</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                1. Robust Speaker Verification
+                1. Installable Middleware
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Extract 192-dimensional acoustic speaker embeddings via SpeechBrain ECAPA-TDNN and verify against stored enrolled voiceprints using clamped cosine similarity with an Equal Error Rate target below 0.87%.
+                A stable, versioned REST contract, so integration costs a host two calls rather than a redesign.
               </p>
             </div>
-
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🛡️</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔐</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                2. Deepfake & Audio Anti-Spoofing
+                2. Active Liveness
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Deploy a Wav2Vec2 audio classification gate prior to speaker verification to detect synthetic speech, neural vocoder artifacts, and replay attacks, rejecting fraudulent attempts before identity matching.
+                An unpredictable, HMAC-signed, 90-second, single-use challenge for every attempt.
               </p>
             </div>
-
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🔐</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🛡️</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                3. Challenge-Response Active Liveness
+                3. Fail-Closed Gates
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Issue randomized challenge phrases combined with cryptographic HMAC-SHA256 tokens (strict 90s TTL, single-use consumption) and verify spoken phrases via Whisper ASR to neutralize replay injection.
+                Spoof detection, exact-phrase verification and speaker verification chained as independent gates that all fail closed.
               </p>
             </div>
-
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>🔄</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔒</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                4. Continuous Voiceprint Adaptation
+                4. Biometric Data Stays in the Engine
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Implement an Exponential Moving Average algorithm (α = 0.20) that smoothly updates stored voiceprints upon authentic verification to counteract natural biological voice drift without compromising security.
+                Audio goes straight from the device to the engine, voiceprints are encrypted at rest, hosts receive only a categorical decision.
               </p>
             </div>
-
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>⚡</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📞</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                5. Plug-and-Play Middleware API
+                5. Anti-Vishing Analysis
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Package the authentication cascade as high-concurrency asynchronous FastAPI REST routes with Docker containerization, allowing seamless drop-in integration into banking and enterprise applications.
+                A separate transcript risk engine (AAA-VR) for call centres that does not touch the authentication path.
               </p>
             </div>
-
             <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>📊</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🏦</div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                6. Forensic Auditing & Traceability
+                6. Two Independent Hosts
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Persist detailed forensic metrics for every attempt in PostgreSQL, recording layer failure codes, deepfake confidence scores, similarity metrics, and challenge timestamps for compliance audits.
+                Banking Shield (transactions) and CallGuard (call-centre risk) both run on the same middleware.
+              </p>
+            </div>
+            <div className="saas-card" style={{ marginBottom: 0, padding: '2rem' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📏</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
+                7. Honest Reporting
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Every result is stated with its dataset, split, configuration and limits; no claim the evidence cannot carry.
               </p>
             </div>
           </div>
@@ -275,10 +277,10 @@ export default function HomePage({ onNavigate }) {
       <section style={{ padding: '4.5rem 1.5rem', background: '#ffffff', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <span className="section-eyebrow">Cascaded Verification Sequence</span>
-            <h2 className="section-title">Authentication Pipeline Flow (Pipeflow)</h2>
+            <span className="section-eyebrow">Verification Pipeline</span>
+            <h2 className="section-title">How One Authentication Runs</h2>
             <p className="section-subtitle">
-              The end-to-end zero-trust verification pipeline executed by the backend for every incoming authentication attempt.
+              Validate first, then the spoof and phrase gates in parallel, then the speaker gate, then one decision. Every gate fails closed: a model error gives UNAVAILABLE, never APPROVE.
             </p>
           </div>
 
@@ -331,60 +333,93 @@ export default function HomePage({ onNavigate }) {
                 className="btn btn-secondary"
                 style={{ fontSize: '0.88rem' }}
               >
-                Inspect Detailed 6-Stage Workflow Logic →
+                See the Full Decision Matrix →
               </button>
               <button
                 onClick={() => onNavigate('app')}
                 className="btn btn-primary"
                 style={{ fontSize: '0.88rem' }}
               >
-                Test Pipeflow in Live Application →
+                Try the Interactive Demo →
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. ENGINEERING METHODOLOGY */}
+      {/* 5. RESULTS (final report, Section 8) */}
       <section style={{ padding: '4.5rem 1.5rem', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '1100px' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="section-eyebrow">Research & Technical Workflow</span>
-            <h2 className="section-title">Project Methodology</h2>
+            <span className="section-eyebrow">Testing & Evaluation</span>
+            <h2 className="section-title">Results</h2>
             <p className="section-subtitle">
-              Systematic 6-step engineering methodology guiding the design, implementation, and empirical validation of AAA Engine.
+              Measured numbers from the final report. Each is stated with its scope, and the open items are listed rather than hidden.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-            {[
-              { step: '01', title: 'Data Pipeline & Standardisation', desc: 'Audio normalization to 16kHz mono WAV, silence trimming with librosa, in-browser Web Audio API resampling, and feature extraction.' },
-              { step: '02', title: 'Layer 1 ECAPA-TDNN Modeling', desc: 'Pretrained SpeechBrain 192-dim embedding extraction with attentive statistics pooling, Windows LocalStrategy deployment, and cosine similarity tuning.' },
-              { step: '03', title: 'Layer 2 Anti-Spoofing Integration', desc: 'Deploying Hugging Face wav2vec2 binary audio classification as an immediate defensive barrier preceding identity verification.' },
-              { step: '04', title: 'Layer 3 Cryptographic Tokens & ASR', desc: 'HMAC-SHA256 URL-safe token signing with 90s TTL, randomized phrase generation, and Whisper ASR string similarity matching.' },
-              { step: '05', title: 'Adaptive Voiceprint Management', desc: 'Developing the Exponential Moving Average (EMA α = 0.20) formulation to continuously track natural biological voice drift upon authentic logins.' },
-              { step: '06', title: 'API Middleware & Full Stack Portal', desc: 'FastAPI async pipeline wiring, PostgreSQL ORM persistence, Docker containerization, and React SaaS client evaluation.' },
-            ].map((m, i) => (
-              <div key={i} className="saas-card" style={{ marginBottom: 0, padding: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.75rem' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 800, background: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '3px 8px', borderRadius: '6px' }}>
-                    STEP {m.step}
-                  </span>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text)' }}>
-                    {m.title}
-                  </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
+            {KEY_RESULTS.map((r) => (
+              <div key={r.label} className="saas-card" style={{ marginBottom: 0, padding: '1.5rem' }}>
+                <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--color-primary)', fontVariantNumeric: 'tabular-nums' }}>
+                  {r.value}
                 </div>
-                <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                  {m.desc}
-                </p>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-text)', marginTop: '0.25rem' }}>{r.label}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>{r.note}</div>
               </div>
             ))}
           </div>
 
-          <div style={{ textAlign: 'center' }}>
-            <button onClick={() => onNavigate('workflow')} className="btn btn-secondary" style={{ fontSize: '0.9rem' }}>
-              Inspect Detailed Authentication Workflow Diagram →
-            </button>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            {[
+              {
+                step: 'AAA-ASR',
+                title: 'Fine-tuning rejected on evidence',
+                desc: 'A decoder-only Whisper fine-tune on LibriSpeech lowered word and character error, but exact-phrase accuracy fell from 47.07 % to 44.73 % on 427 held-out utterances. The stock model stayed deployed.',
+              },
+              {
+                step: 'AAA-AD',
+                title: 'XLS-R detector, first run',
+                desc: 'Best Dev-A EER 0.0685 % at epoch 1, then early stopping. This is an in-distribution figure on generators shared with training; the untouched LA evaluation set is still to run.',
+              },
+              {
+                step: 'AAA-SV',
+                title: 'ECAPA-TDNN fine-tune on a V100',
+                desc: 'VoxCeleb1 dev (1,211 speakers), zero overlap with the 40 test speakers. Loss 1.58 → 0.93 in the first epoch. Bucketed EER and calibration are pending the frozen evaluation run.',
+              },
+              {
+                step: 'Security',
+                title: 'Attacks refused',
+                desc: 'Token replay and tampering, cross-tenant access, voiceprint bit-flips, wildcard CORS, score probing and weak start-up secrets were all rejected; concurrent replay of one challenge gives exactly one success.',
+              },
+              {
+                step: 'Research',
+                title: 'Separation-aware detection study',
+                desc: 'Training on separated speech gave a 4–6 point EER gain (p ≤ 0.001). The proposed Dynamic-Margin OC-Softmax reached 8.98 % EER, not significantly better than static OC-Softmax (p = 0.071).',
+              },
+              {
+                step: 'Users',
+                title: '34-participant study',
+                desc: 'Would recommend 88.2 %, satisfied 82.4 %, felt secure 76.5 %. First-time users found it harder, which led to recording hints and plain-language rejection reasons.',
+              },
+            ].map((m) => (
+              <div key={m.title} className="saas-card" style={{ marginBottom: 0, padding: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.75rem' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', fontWeight: 800, background: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '3px 8px', borderRadius: '6px' }}>
+                    {m.step}
+                  </span>
+                  <h3 style={{ fontSize: '1.02rem', fontWeight: 700, color: 'var(--color-text)' }}>{m.title}</h3>
+                </div>
+                <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>{m.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="saas-card" style={{ marginBottom: 0, padding: '1.5rem', background: '#fffbeb', borderColor: '#fde68a' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.5rem' }}>Known limitations</h3>
+            <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+              Latency was measured on CPU, so the 2.0 s p95 target depends on GPU inference. The deepfake result is in-distribution and says little about unseen generators. The vishing engine is rule-based. Rate limits and lockout are process-local, and master keys come from environment variables rather than a managed key service. The user study is a usability study, not a security evaluation.
+            </p>
           </div>
         </div>
       </section>
@@ -396,7 +431,7 @@ export default function HomePage({ onNavigate }) {
             <span className="section-eyebrow">Academic Differentiation</span>
             <h2 className="section-title">Novelty & Competitive Advantage</h2>
             <p className="section-subtitle">
-              How AAA Engine advances beyond existing commercial and academic biometric benchmarks.
+              Feature comparison carried over from the Phase I competitor analysis (report Table 1). "Partial" means the capability exists only in part or as a research artefact.
             </p>
           </div>
 
@@ -404,10 +439,11 @@ export default function HomePage({ onNavigate }) {
             <table className="light-table">
               <thead>
                 <tr>
-                  <th style={{ width: '22%' }}>Architectural Dimension</th>
-                  <th style={{ width: '26%' }}>Traditional Biometrics</th>
-                  <th style={{ width: '26%' }}>Commercial Solutions</th>
-                  <th style={{ width: '26%', color: 'var(--color-primary)' }}>AAA Engine (This Work)</th>
+                  <th style={{ width: '32%' }}>Capability</th>
+                  <th style={{ width: '17%' }}>HSBC / Nuance</th>
+                  <th style={{ width: '17%' }}>Google / Azure</th>
+                  <th style={{ width: '17%' }}>ASVspoof baselines</th>
+                  <th style={{ width: '17%', color: 'var(--color-primary)' }}>AAA Engine</th>
                 </tr>
               </thead>
               <tbody>
@@ -416,6 +452,7 @@ export default function HomePage({ onNavigate }) {
                     <td style={{ fontWeight: 700, color: 'var(--color-text)' }}>{row.feature}</td>
                     <td style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>{row.traditional}</td>
                     <td style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>{row.commercial}</td>
+                    <td style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>{row.research}</td>
                     <td style={{ color: 'var(--color-primary)', fontWeight: 600, fontSize: '0.85rem', background: 'var(--color-primary-light)' }}>
                       {row.aaaEngine}
                     </td>
@@ -465,7 +502,7 @@ export default function HomePage({ onNavigate }) {
                 {PROJECT.institution}
               </div>
               <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.6, maxWidth: '520px' }}>
-                Conducted by Team 90 under the faculty guidance of <strong>{PROJECT.guide.name}</strong>, Associate Professor. A production-ready voice authentication middleware engineered against modern acoustic spoofing and neural voice cloning.
+                Conducted by Team G090 under the guidance of <strong>{PROJECT.guide.name}</strong>, Associate Professor. A working, tested voice-authentication middleware demonstrated through two host applications. It is not production-certified: load testing and an independent penetration test are future work.
               </p>
               <div style={{ display: 'flex', gap: '10px', marginTop: '1.25rem' }}>
                 <button
@@ -510,7 +547,7 @@ export default function HomePage({ onNavigate }) {
                   Student Engineering Team
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.6 }}>
-                  M Nandan Reddy • M Navadeep Kumar • Parise Aditya • AVKB Surya • M Karthik Srijan
+                  M Nandan Reddy • M L N Navadeep Kumar • P Aditya Sai • A V K B Surya • M Karthik Srijan
                 </div>
               </div>
             </div>

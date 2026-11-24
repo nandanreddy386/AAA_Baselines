@@ -563,3 +563,22 @@ code {
     display: flex !important;
   }
 }
+
+/* --- Five public decisions (final report, Table 5) --- */
+.light-decision-card.APPROVE { background: var(--color-success-light); border-color: var(--color-success); }
+.light-decision-card.DENY { background: var(--color-danger-light); border-color: var(--color-danger); }
+.light-decision-card.STEP_UP { background: #fffbeb; border-color: #f59e0b; }
+.light-decision-card.REVIEW { background: #eff6ff; border-color: #3b82f6; }
+.light-decision-card.UNAVAILABLE { background: #f1f5f9; border-color: #64748b; }
+
+.badge-decision-light.APPROVE { background: var(--color-success); color: #ffffff; }
+.badge-decision-light.DENY { background: var(--color-danger); color: #ffffff; }
+.badge-decision-light.STEP_UP { background: #d97706; color: #ffffff; }
+.badge-decision-light.REVIEW { background: #2563eb; color: #ffffff; }
+.badge-decision-light.UNAVAILABLE { background: #475569; color: #ffffff; }
+
+.badge-tag-light.APPROVE { background: var(--color-success-light); color: var(--color-success); }
+.badge-tag-light.DENY { background: var(--color-danger-light); color: var(--color-danger); }
+.badge-tag-light.STEP_UP { background: #fef3c7; color: #b45309; }
+.badge-tag-light.REVIEW { background: #dbeafe; color: #1d4ed8; }
+.badge-tag-light.UNAVAILABLE { background: #e2e8f0; color: #334155; }

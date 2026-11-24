@@ -9,7 +9,7 @@ export default function StatusTeamPage() {
         <span className="section-eyebrow">Academic Engineering Tracking</span>
         <h1 className="section-title">Implementation Status & Engineering Team</h1>
         <p className="section-subtitle">
-          Transparent auditing of implemented capabilities versus future semester plans, verified against the repository codebase.
+          Integration status of each tier at the end of the Phase II sprint (report Table 9), with the evaluations still running and the future work listed openly.
         </p>
       </div>
 
@@ -18,18 +18,18 @@ export default function StatusTeamPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '10px' }}>
           <div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)' }}>
-              Component Verification Matrix
+              Implementation & Integration Status
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-              Source-of-truth priority: Actual repository code &gt; Architecture design &gt; Planned research.
+              Source: final project report, 15 November 2026.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <span style={{ fontSize: '0.78rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px', background: 'var(--color-success-light)', color: 'var(--color-success)' }}>
-              ● 7 Verified in Code
+              ● {IMPLEMENTATION_MATRIX.filter((r) => r.status !== 'Future work').length} Integrated
             </span>
             <span style={{ fontSize: '0.78rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px', background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
-              ○ 2 Planned Phase 2
+              ○ {IMPLEMENTATION_MATRIX.filter((r) => r.status === 'Future work').length} Future work
             </span>
           </div>
         </div>
@@ -41,12 +41,12 @@ export default function StatusTeamPage() {
                 <th style={{ width: '25%' }}>System Component</th>
                 <th style={{ width: '22%' }}>Model / Technology</th>
                 <th style={{ width: '18%' }}>Status</th>
-                <th style={{ width: '35%' }}>Technical Verification Details</th>
+                <th style={{ width: '35%' }}>Details</th>
               </tr>
             </thead>
             <tbody>
               {IMPLEMENTATION_MATRIX.map((row, idx) => {
-                const isDone = row.status.includes('Verified');
+                const isDone = row.status !== 'Future work';
                 return (
                   <tr key={idx}>
                     <td style={{ fontWeight: 700, color: 'var(--color-text)' }}>
@@ -68,7 +68,7 @@ export default function StatusTeamPage() {
                           whiteSpace: 'nowrap',
                         }}
                       >
-                        {isDone ? 'VERIFIED' : 'PLANNED'}
+                        {row.status.toUpperCase()}
                       </span>
                     </td>
                     <td style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
@@ -88,7 +88,7 @@ export default function StatusTeamPage() {
           <span className="section-eyebrow">Project Contributors</span>
           <h2 className="section-title">The Engineering Team</h2>
           <p className="section-subtitle">
-            Department of Computer Science & Engineering, Amrita School of Computing (23CSE498 - Team 90)
+            Department of Computer Science & Engineering, Amrita School of Computing (23CSE498 - Team G090)
           </p>
         </div>
 

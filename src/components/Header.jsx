@@ -8,8 +8,8 @@ export default function Header({ activePage, onNavigate }) {
 
   const NAV_ITEMS = [
     { id: 'home', label: 'Home' },
-    { id: 'app', label: 'Live App', badge: 'Interactive' },
-    { id: 'demos', label: 'Demo Videos' },
+    { id: 'app', label: 'Demo App', badge: 'Interactive' },
+    { id: 'demos', label: 'Demo Script' },
     { id: 'workflow', label: 'Auth Workflow' },
     { id: 'architecture', label: 'Architecture' },
     { id: 'docs', label: 'API & Docs' },

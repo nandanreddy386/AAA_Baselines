@@ -6,74 +6,74 @@ export default function ArchitecturePage() {
 
   const ARCH_TIERS = [
     {
-      tier: 'Tier 1: Client & Audio Resampling',
-      badge: 'FRONTEND RUNTIME',
+      tier: 'Client tier',
+      badge: 'HOSTS + CAPTURE',
       components: [
         {
-          name: 'React 19 + Vite Dashboard',
-          desc: 'Lightweight, high-responsiveness SaaS portal providing registration, 3-sample enrollment, challenge acquisition with 90s countdown, and verification metrics.',
+          name: 'Banking Shield',
+          desc: 'Mock retail-banking host: enrolment, transaction simulator, step-up handling and a security dashboard. Tiered policy: a balance view accepts a standard pass; a high-value transfer needs a clean pass, treats a marginal score as STEP_UP and any risk signal as REVIEW.',
         },
         {
-          name: 'Web Audio API Resampler (audioEncoder.js)',
-          desc: 'Decodes native browser MediaRecorder stream (WebM/Opus) and resamples to strictly 16,000 Hz Mono 16-bit PCM RIFF WAV using an OfflineAudioContext before transmission.',
+          name: 'CallGuard',
+          desc: 'Call-centre console: priority queue, live synthetic transcript, AAA-VR risk panel and tier-2 escalation, with four seeded scenarios. It never records or proxies audio.',
         },
         {
-          name: 'Audio Spectrum Visualizer',
-          desc: 'Provides real-time feedback during recording with animated frequency bars to guarantee active audio input.',
+          name: 'AAA capture component',
+          desc: 'Runs on the user’s device in an isolated frame, records locally, uploads straight to the engine with a capture grant, and posts only a safe status to the verified parent origin.',
         },
       ],
     },
     {
-      tier: 'Tier 2: Backend Orchestration & Middleware',
-      badge: 'FASTAPI MIDDLEWARE',
+      tier: 'Service tier',
+      badge: 'FASTAPI /v1',
       components: [
         {
-          name: 'FastAPI Application (main.py)',
-          desc: 'High-throughput async Python ASGI server running on port 8000. Coordinates L2 → ASR → L1 → L3 verification cascade and provides CORS handling.',
+          name: 'API gateway',
+          desc: 'Tenant bearer token, request ID, per-endpoint rate limits, a 100-request-per-minute tenant window, lockout for 15 minutes after five failures, and a CORS allow list that rejects wildcards.',
         },
         {
-          name: 'SQLAlchemy ORM (db.py & models.py)',
-          desc: 'Manages database sessions, connection pooling to PostgreSQL / Supabase, schema creation, and transaction rollbacks on errors.',
+          name: 'Challenge and capture-grant services',
+          desc: 'HMAC-signed, 90-second, single-use challenges held in the database and consumed atomically; grants scoped to one tenant, user, challenge and upload.',
         },
         {
-          name: 'Pydantic v2 Request/Response Models',
-          desc: 'Strict schema validation for user payloads, challenge issuance, and verification responses with complete JSON serialization.',
+          name: 'Orchestrator and policy engine',
+          desc: 'Validates input, runs AD and ASR in parallel, runs SV only if both pass, and lets one model-free policy module return the decision. Any error becomes UNAVAILABLE.',
         },
       ],
     },
     {
-      tier: 'Tier 3: AI Deep Learning Inference',
-      badge: 'PYTORCH & TRANSFORMERS',
+      tier: 'Model adapters (local, offline-capable)',
+      badge: 'HEALTH • PREDICT • VERSION • TIMEOUT',
       components: [
         {
-          name: 'Layer 1: SpeechBrain ECAPA-TDNN',
-          desc: 'speechbrain/spkrec-ecapa-voxceleb. Extracts 192-dimensional embeddings via attentive statistics pooling. Employs LocalStrategy.COPY to eliminate Windows symlink permission restrictions.',
+          name: 'AAA-AD spoof gate',
+          desc: 'B0: pretrained Wav2Vec2 deepfake classifier. B1: XLS-R 300M fine-tuned on ASVspoof 2019 LA with attention-mask-aware pooling.',
         },
         {
-          name: 'Layer 2: Hugging Face Wav2Vec2',
-          desc: 'garystafford/wav2vec2-deepfake-voice-detector. AutoModelForAudioClassification mapping raw audio waveforms to bonafide vs. spoof probabilities via softmax logits.',
+          name: 'AAA-ASR phrase gate',
+          desc: 'Stock Whisper loaded from a staged, hash-checked directory with no download, followed by a deterministic exact-phrase verifier with no learned parameters.',
         },
         {
-          name: 'Layer 3 ASR: OpenAI Whisper (base)',
-          desc: 'Performs robust automatic speech recognition to transcribe spoken challenge phrases, followed by difflib text similarity normalization to prevent pre-recorded playback.',
+          name: 'AAA-SV speaker gate and AAA-VR risk engine',
+          desc: 'ECAPA-TDNN 192-dim embeddings (B0 pretrained, B1 fine-tuned). AAA-VR is a separate, rules-first transcript risk engine that never touches the authentication path.',
         },
       ],
     },
     {
-      tier: 'Tier 4: Relational Data Persistence',
-      badge: 'POSTGRESQL (SUPABASE)',
+      tier: 'Persistence tier',
+      badge: 'POSTGRESQL (SQLITE FOR TESTS)',
       components: [
         {
-          name: 'Biometric Voiceprint Store',
-          desc: 'Stores 192-element float arrays representing speaker identity, along with sample counts and adaptation timestamps.',
+          name: 'Encrypted voiceprint vault',
+          desc: 'AES-256-GCM with a key derived per tenant, a fresh 96-bit nonce per record and tamper detection on decrypt. Raw audio is not retained.',
         },
         {
-          name: 'Forensic Audit Logs',
-          desc: 'Captures full diagnostic records of every verification attempt, including blocked layer ID, spoof confidence, speaker similarity, and timestamp.',
+          name: 'Challenges',
+          desc: 'Unique signed token, expiry and used flag, indexed so atomic consumption and clean-up stay cheap. Row-level security is enabled on all tables.',
         },
         {
-          name: 'Cryptographic Challenge Sessions',
-          desc: 'Maintains active challenge nonces, HMAC signatures, and single-use booleans with 90s TTL expiration.',
+          name: 'Audit log',
+          desc: 'Which gate blocked a request and the outcome. Internal scores are kept for audit only; logs redact tokens, authorisation headers and biometric vectors.',
         },
       ],
     },
@@ -85,10 +85,10 @@ export default function ArchitecturePage() {
     <div className="container" style={{ padding: '3rem 1.5rem', maxWidth: '1100px' }}>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <span className="section-eyebrow">Enterprise System Architecture</span>
-        <h1 className="section-title">Verified Implementation Architecture</h1>
+        <span className="section-eyebrow">System Architecture (report Section 4)</span>
+        <h1 className="section-title">Three-Tier Middleware</h1>
         <p className="section-subtitle">
-          Engineered as a modular, low-latency biometric security middleware across four distinct operational tiers.
+          The host backend starts a session and receives a decision. The audio takes a different route: capture component to engine, directly.
         </p>
       </div>
 
@@ -134,10 +134,10 @@ export default function ArchitecturePage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)' }}>
-              Relational Database Schema (docs/DB_SCHEMA.sql)
+              Database Schema (report Figure 4)
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-              PostgreSQL schema storing identities, 192-dim acoustic vectors, challenge tokens, and forensic audit logs.
+              Four entities. A user owns at most one voiceprint and many challenges and audit rows; row-level security is enabled on all four tables.
             </p>
           </div>
 
@@ -205,48 +205,28 @@ export default function ArchitecturePage() {
         </div>
       </div>
 
-      {/* Docker Deployment Architecture */}
+      {/* Installation (report Section 5.5, Listing 5) */}
       <div className="saas-card" style={{ marginTop: '2rem', padding: '2rem' }}>
         <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-          Containerized Deployment (docker-compose.yml)
+          Installation and Configuration
         </h3>
-        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
-          Production deployment architecture packaging the FastAPI application and PostgreSQL database with persistent volume mounts.
-        </p>
-
+        <ol style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.7, paddingLeft: '1.25rem', marginBottom: '1.25rem' }}>
+          <li>Provision PostgreSQL and apply the tracked migrations.</li>
+          <li>Set the secrets in the environment: database URL, a JWT secret of at least 32 characters, the challenge HMAC secret and the voiceprint master key. Start-up refuses missing or weak secrets.</li>
+          <li>Set the allowed origins explicitly; wildcards are refused.</li>
+          <li>Stage the three models on local disk and record their hashes in the model manifest.</li>
+          <li>Start the service and wait for the readiness probe, which returns 503 until the database, models and configuration are healthy.</li>
+          <li>Register each host as a tenant and issue its client credentials.</li>
+        </ol>
         <div style={{ background: '#0f172a', borderRadius: 'var(--radius-lg)', padding: '1.5rem', color: '#38bdf8', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', overflowX: 'auto' }}>
-          <pre>{`version: '3.8'
-
-services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://aaa_user:secure_pass@db:5432/aaa_db
-      - L3_HMAC_SECRET=aaa_engine_l3_adaptive_secret_key_2026
-      - WHISPER_MODEL=base
-    depends_on:
-      - db
-    volumes:
-      - ./pretrained_models:/app/pretrained_models
-
-  db:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=aaa_user
-      - POSTGRES_PASSWORD=secure_pass
-      - POSTGRES_DB=aaa_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:`}</pre>
+          <pre>{`cp .env.example .env               # set secrets, thresholds, origins
+uvicorn app.main:app --port 8000   # start the service tier
+curl localhost:8000/v1/health      # liveness
+curl localhost:8000/v1/ready       # models and database present?`}</pre>
         </div>
+        <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '1rem' }}>
+          The local, offline profile is the default and the only one used in acceptance testing; cloud and hybrid inference are explicit administrator choices, never silent fallbacks.
+        </p>
       </div>
     </div>
   );

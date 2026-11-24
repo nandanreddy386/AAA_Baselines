@@ -6,7 +6,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 export default function Footer({ onNavigate }) {
   const FOOTER_PAGES = [
     { id: 'home', label: 'Home / Overview' },
-    { id: 'app', label: 'Live Application' },
+    { id: 'app', label: 'Interactive Demo' },
     { id: 'workflow', label: 'Auth Workflow' },
     { id: 'architecture', label: 'System Architecture' },
     { id: 'docs', label: 'API & Tech Docs' },

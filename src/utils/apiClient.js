@@ -1,102 +1,180 @@
 /**
  * AAA Engine Client API
- * Connects to live FastAPI backend at http://localhost:8000.
- * Includes local persistence and realistic fallback simulation for GitHub Pages / static hosting.
+ *
+ * Live mode talks to a locally running AAA Engine (http://localhost:8000) through the
+ * versioned /v1 contract described in the final report (Section 4.8, Table 6).
+ *
+ * When no backend is reachable (e.g. on GitHub Pages) the portal runs a clearly
+ * labelled SIMULATION that follows the report's policy decision matrix (Table 3):
+ * one of five public decisions, a public reason code, and never a raw score.
  */
 
 const API_BASE = 'http://localhost:8000';
 
-// Default seeded demo identities
+// --------------------------------------------------------------------------
+// Public vocabulary (report Table 5)
+// --------------------------------------------------------------------------
+
+export const DECISIONS = ['APPROVE', 'DENY', 'STEP_UP', 'REVIEW', 'UNAVAILABLE'];
+
+export const DECISION_INFO = {
+  APPROVE: 'All gates passed. Voiceprint adaptation is considered.',
+  DENY: 'Spoof, phrase mismatch, speaker mismatch, or an expired / used challenge.',
+  STEP_UP: 'Borderline result. Ask for another attempt with a fresh challenge or a stronger factor.',
+  REVIEW: 'Human review required (high vishing-risk context).',
+  UNAVAILABLE: 'A required model or service failed. The engine fails closed.',
+};
+
+export const REASON_INFO = {
+  OK: 'All verification gates passed.',
+  AUTH_FAILED: 'Authentication failed (spoof or speaker gate). The gate is not disclosed to hosts.',
+  PHRASE_MISMATCH: 'The spoken words did not exactly match the challenge phrase.',
+  REPLAY_DETECTED: 'This challenge token was already used. Tokens are single-use.',
+  CHALLENGE_EXPIRED: 'The challenge passed its 90-second lifetime.',
+  CHALLENGE_INVALID: 'The challenge token is unknown or not bound to this user.',
+  TRY_AGAIN: 'Borderline result. Request a fresh challenge and try again.',
+  REVIEW_REQUIRED: 'Escalated to a human reviewer.',
+  SERVICE_UNAVAILABLE: 'A required model was unavailable or timed out. Fail-closed refusal.',
+};
+
+// Simulation scenarios offered in demo mode (each maps to a row of report Table 3)
+export const SIM_SCENARIOS = [
+  { id: 'genuine', label: 'Genuine user, correct phrase', expect: 'APPROVE' },
+  { id: 'deepfake', label: 'Cloned / synthetic voice', expect: 'DENY' },
+  { id: 'wrong_phrase', label: 'Wrong or near-miss phrase', expect: 'DENY' },
+  { id: 'impostor', label: 'Different speaker, correct phrase', expect: 'DENY' },
+  { id: 'marginal', label: 'Marginal speaker score', expect: 'STEP_UP' },
+  { id: 'unavailable', label: 'Model timeout / not ready', expect: 'UNAVAILABLE' },
+];
+
+// --------------------------------------------------------------------------
+// Demo identities and local persistence (simulation only)
+// --------------------------------------------------------------------------
+
 const SEED_USERS = [
   {
     id: '4a7b9c21-83d2-4e9a-bb10-9f1234567890',
-    name: 'Dr. Harini N (Faculty Guide)',
-    email: 'harini@amrita.edu',
+    name: 'Demo Customer 001',
+    email: 'customer001@example.com',
     created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
     has_voiceprint: true,
+    sample_count: 3,
   },
   {
     id: 'b28e5c14-22d1-419b-a012-38d9f12845c1',
-    name: 'M Nandan Reddy',
-    email: 'nandan@aaaengine.io',
+    name: 'Demo Customer 002',
+    email: 'customer002@example.com',
     created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
     has_voiceprint: true,
+    sample_count: 3,
   },
   {
     id: 'f93d18c7-43a1-4682-8bc1-12c8e3914a82',
-    name: 'M Navadeep Kumar',
-    email: 'navadeep@aaaengine.io',
+    name: 'Demo Customer 003',
+    email: 'customer003@example.com',
     created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-    has_voiceprint: true,
+    has_voiceprint: false,
+    sample_count: 0,
   },
 ];
 
-// Helper: load/save local storage for offline mode
-function getLocalUsers() {
+const STORE_VERSION = 'v2'; // bumped: old local data used the Phase I ACCEPT/REJECT format
+
+function readJson(key, fallback) {
   try {
-    const raw = localStorage.getItem('aaa_users');
-    return raw ? JSON.parse(raw) : SEED_USERS;
+    const raw = localStorage.getItem(`aaa_${STORE_VERSION}_${key}`);
+    return raw ? JSON.parse(raw) : fallback;
   } catch {
-    return SEED_USERS;
+    return fallback;
   }
 }
 
-function saveLocalUsers(users) {
+function writeJson(key, value) {
   try {
-    localStorage.setItem('aaa_users', JSON.stringify(users));
+    localStorage.setItem(`aaa_${STORE_VERSION}_${key}`, JSON.stringify(value));
   } catch (e) {
     console.warn('LocalStorage save failed', e);
   }
 }
 
-function getLocalLogs(userId) {
-  try {
-    const raw = localStorage.getItem(`aaa_logs_${userId}`);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return [
-    {
-      id: 'log-' + Math.random().toString(36).substring(2, 9),
-      user_id: userId,
-      l2_label: 'bonafide',
-      l2_confidence: 0.985,
-      l1_score: 0.884,
-      result: 'ACCEPT',
-      layer_blocked: null,
-      created_at: new Date(Date.now() - 3600000).toISOString(),
-      reason: 'Authentication successful',
-    },
-    {
-      id: 'log-' + Math.random().toString(36).substring(2, 9),
-      user_id: userId,
-      l2_label: 'spoof',
-      l2_confidence: 0.923,
-      l1_score: 0.12,
-      result: 'REJECT',
-      layer_blocked: 2,
-      created_at: new Date(Date.now() - 7200000).toISOString(),
-      reason: 'Deepfake/spoof detected',
-    },
-  ];
+const getLocalUsers = () => readJson('users', SEED_USERS);
+const saveLocalUsers = (users) => writeJson('users', users);
+const getLocalLogs = (userId) => readJson(`logs_${userId}`, []);
+const saveLocalLogs = (userId, logs) => writeJson(`logs_${userId}`, logs.slice(0, 50));
+const getLocalHistory = (userId) => readJson(`history_${userId}`, []);
+const saveLocalHistory = (userId, h) => writeJson(`history_${userId}`, h.slice(0, 50));
+const getChallenges = () => readJson('challenges', {});
+const saveChallenges = (c) => writeJson('challenges', c);
+
+function uuid() {
+  return crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + Math.random().toString(16).slice(2);
 }
 
-function saveLocalLogs(userId, logs) {
-  try {
-    localStorage.setItem(`aaa_logs_${userId}`, JSON.stringify(logs));
-  } catch (e) {
-    console.warn('LocalStorage log save failed', e);
+function updateUser(userId, patch) {
+  const users = getLocalUsers();
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx !== -1) {
+    users[idx] = { ...users[idx], ...patch(users[idx]) };
+    saveLocalUsers(users);
+    return users[idx];
   }
+  return null;
+}
+
+function pushHistory(userId, sampleCount, event) {
+  const h = getLocalHistory(userId);
+  h.unshift({ updated_at: new Date().toISOString(), sample_count: sampleCount, event });
+  saveLocalHistory(userId, h);
+}
+
+// --------------------------------------------------------------------------
+// Challenge phrase generator: mirrors backend/app/layer3_adaptive.py
+// (108 common words, 8 templates, 28,400 phrases)
+// --------------------------------------------------------------------------
+
+const NUMBERS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const COLORS = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'black', 'white', 'gray', 'gold', 'silver'];
+const ANIMALS = ['dog', 'cat', 'bird', 'fish', 'horse', 'cow', 'pig', 'duck', 'frog', 'bear', 'lion', 'tiger', 'wolf', 'fox', 'rabbit', 'mouse', 'snake', 'monkey', 'elephant', 'zebra'];
+const OBJECTS = ['book', 'cup', 'ball', 'chair', 'table', 'door', 'window', 'car', 'tree', 'house', 'phone', 'key', 'lamp', 'clock', 'box', 'bag', 'hat', 'shoe', 'pen', 'ring'];
+const ADJECTIVES = ['big', 'small', 'fast', 'slow', 'tall', 'short', 'hot', 'cold', 'new', 'old', 'happy', 'quiet', 'loud', 'soft', 'hard', 'bright', 'dark', 'clean', 'strong', 'kind'];
+const VERBS = ['runs', 'jumps', 'sits', 'walks', 'eats', 'sleeps', 'plays', 'reads', 'sings', 'draws', 'swims', 'flies', 'drives', 'rides', 'climbs'];
+const PLACES = ['park', 'home', 'school', 'store', 'beach', 'farm', 'city', 'town', 'lake', 'hill'];
+
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+export function generatePhrase() {
+  switch (Math.floor(Math.random() * 8)) {
+    case 0: return `${pick(NUMBERS)} ${pick(COLORS)} ${pick(ANIMALS)}`;
+    case 1: return `The ${pick(ADJECTIVES)} ${pick(ANIMALS)} ${pick(VERBS)}`;
+    case 2: return `${pick(COLORS)} ${pick(OBJECTS)} and ${pick(OBJECTS)}`;
+    case 3: return `${pick(NUMBERS)} ${pick(ADJECTIVES)} ${pick(OBJECTS)}`;
+    case 4: return `The ${pick(ANIMALS)} ${pick(VERBS)} at ${pick(PLACES)}`;
+    case 5: return `${pick(ADJECTIVES)} ${pick(COLORS)} ${pick(OBJECTS)}`;
+    case 6: return `My ${pick(ANIMALS)} is ${pick(ADJECTIVES)}`;
+    default: return `${pick(NUMBERS)} ${pick(ANIMALS)} in ${pick(PLACES)}`;
+  }
+}
+
+// --------------------------------------------------------------------------
+// Live backend helpers
+// --------------------------------------------------------------------------
+
+async function readError(res, fallback) {
+  const body = await res.json().catch(() => ({}));
+  const d = body.detail;
+  if (d && typeof d === 'object') return d.message || d.code || fallback;
+  return d || body.message || fallback;
 }
 
 export const checkServerHealth = async () => {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(`${API_BASE}/`, { signal: controller.signal });
+    const res = await fetch(`${API_BASE}/v1/health`, { signal: controller.signal });
     clearTimeout(timeout);
     if (!res.ok) return false;
     const data = await res.json();
-    return data && data.status === 'running';
+    return data && data.status === 'healthy';
   } catch {
     return false;
   }
@@ -104,51 +182,35 @@ export const checkServerHealth = async () => {
 
 export const getAllUsers = async (isLive = false) => {
   if (isLive) {
-    try {
-      const res = await fetch(`${API_BASE}/users`);
-      if (res.ok) return await res.json();
-    } catch (e) {
-      console.warn('Live getAllUsers failed, falling back to local storage', e);
-    }
+    const res = await fetch(`${API_BASE}/users`);
+    if (!res.ok) throw new Error(await readError(res, 'Could not load users'));
+    return await res.json();
   }
   return getLocalUsers();
 };
 
 export const registerUser = async (name, email, isLive = false) => {
   if (isLive) {
-    try {
-      const res = await fetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: 'Registration failed' }));
-        throw new Error(err.detail || 'Registration failed');
-      }
-      return await res.json();
-    } catch (e) {
-      if (!e.message.includes('already registered')) {
-        console.warn('Live register failed, using offline store', e);
-      } else {
-        throw e;
-      }
-    }
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email }),
+    });
+    if (!res.ok) throw new Error(await readError(res, 'Registration failed'));
+    return await res.json();
   }
 
-  // Offline handler
   const users = getLocalUsers();
-  const existing = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
-  if (existing) {
+  if (users.find((u) => u.email.toLowerCase() === email.toLowerCase())) {
     throw new Error('Email already registered');
   }
-
   const newUser = {
-    id: crypto.randomUUID ? crypto.randomUUID() : 'usr-' + Date.now(),
+    id: uuid(),
     name,
     email,
     created_at: new Date().toISOString(),
     has_voiceprint: false,
+    sample_count: 0,
   };
   users.unshift(newUser);
   saveLocalUsers(users);
@@ -157,150 +219,137 @@ export const registerUser = async (name, email, isLive = false) => {
 
 export const enrollVoice = async (userId, audioBlob, isLive = false) => {
   if (isLive) {
-    try {
-      const formData = new FormData();
-      formData.append('user_id', userId);
-      formData.append('audio', audioBlob, 'enrollment.wav');
-
-      const res = await fetch(`${API_BASE}/auth/enroll`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: 'Enrollment failed' }));
-        throw new Error(err.detail || 'Enrollment failed');
-      }
-      return await res.json();
-    } catch (e) {
-      console.warn('Live enroll failed, using offline simulation', e);
-    }
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('audio', audioBlob, 'enrollment.wav');
+    const res = await fetch(`${API_BASE}/v1/enroll`, { method: 'POST', body: formData });
+    if (!res.ok) throw new Error(await readError(res, 'Enrollment failed'));
+    return await res.json();
   }
 
-  // Offline simulation
-  const users = getLocalUsers();
-  const idx = users.findIndex((u) => u.id === userId);
-  let sampleCount = 1;
-  if (idx !== -1) {
-    users[idx].has_voiceprint = true;
-    sampleCount = (users[idx].sample_count || 0) + 1;
-    users[idx].sample_count = sampleCount;
-    saveLocalUsers(users);
-  }
+  const user = updateUser(userId, (u) => ({
+    has_voiceprint: true,
+    sample_count: (u.sample_count || 0) + 1,
+  }));
+  const sampleCount = user ? user.sample_count : 1;
+  pushHistory(userId, sampleCount, sampleCount === 1 ? 'Voiceprint created (encrypted at rest)' : 'Enrolment sample added');
   return {
+    request_id: uuid(),
     status: 'enrolled',
     sample_count: sampleCount,
-    message: 'Voiceprint sample registered (ECAPA-TDNN 192-dim vector extracted)',
+    is_new: sampleCount === 1,
   };
 };
 
 export const getChallenge = async (userId, isLive = false) => {
   if (isLive) {
-    try {
-      const res = await fetch(`${API_BASE}/auth/challenge?user_id=${userId}`);
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: 'Challenge failed' }));
-        throw new Error(err.detail || 'Challenge failed');
-      }
-      return await res.json();
-    } catch (e) {
-      console.warn('Live getChallenge failed, using offline simulation', e);
-    }
+    const res = await fetch(`${API_BASE}/v1/challenges`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    if (!res.ok) throw new Error(await readError(res, 'Challenge failed'));
+    return await res.json();
   }
 
-  // Offline random phrase generator
-  const NUMBERS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-  const COLOURS = ['red', 'blue', 'green', 'amber', 'silver', 'crimson', 'golden', 'violet'];
-  const OBJECTS = ['falcon', 'phoenix', 'panther', 'sapphire', 'nexus', 'echo', 'matrix', 'shield'];
-  const n1 = NUMBERS[Math.floor(Math.random() * NUMBERS.length)];
-  const col = COLOURS[Math.floor(Math.random() * COLOURS.length)];
-  const obj = OBJECTS[Math.floor(Math.random() * OBJECTS.length)];
-  const n2 = NUMBERS[Math.floor(Math.random() * NUMBERS.length)];
-  const phrase = `Say: ${n1} ${col} ${obj} ${n2}`;
-
-  const nonce = Math.random().toString(36).substring(2, 10);
+  const phrase = generatePhrase();
+  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('');
   const expiresAt = new Date(Date.now() + 90000);
-  const token = `${nonce}.${Math.floor(expiresAt.getTime() / 1000)}.hmac_sha256_mock_sig`;
-
+  const token = `${nonce}.${Math.floor(expiresAt.getTime() / 1000)}.simulated-hmac-sha256`;
+  const challenges = getChallenges();
+  challenges[token] = { user_id: userId, phrase, expires_at: expiresAt.toISOString(), used: false };
+  saveChallenges(challenges);
   return {
+    request_id: uuid(),
+    challenge_id: uuid(),
     phrase,
     token,
     expires_at: expiresAt.toISOString(),
+    ttl_seconds: 90,
+    simulated: true,
   };
 };
 
-export const verifyVoice = async (userId, token, audioBlob, isLive = false, simulateSpoof = false) => {
-  if (isLive) {
-    try {
-      const formData = new FormData();
-      formData.append('user_id', userId);
-      formData.append('token', token);
-      formData.append('audio', audioBlob, 'verify.wav');
+// --------------------------------------------------------------------------
+// Verification
+// --------------------------------------------------------------------------
 
-      const res = await fetch(`${API_BASE}/auth/verify`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: 'Verification failed' }));
-        throw new Error(err.detail || 'Verification failed');
-      }
-      return await res.json();
-    } catch (e) {
-      console.warn('Live verify failed, falling back to simulation', e);
+/**
+ * Simulated policy engine. Mirrors report Table 3:
+ * challenge is consumed first (atomic, single use), then AD || ASR, then SV only
+ * if both passed, then one central decision. Returns public fields only.
+ */
+function simulateVerify(userId, token, scenario) {
+  const out = (decision, reason_public, gate) => ({
+    request_id: uuid(),
+    session_id: uuid(),
+    decision,
+    reason_public,
+    risk_level: 'LOW',
+    requires_fresh_challenge: decision === 'STEP_UP',
+    requires_human_review: decision === 'REVIEW',
+    simulated: true,
+    // gate trace is for the demo only: the real API never returns it to hosts
+    _demo_trace: gate,
+  });
+
+  const challenges = getChallenges();
+  const ch = challenges[token];
+  if (!ch || ch.user_id !== userId) {
+    return out('DENY', 'CHALLENGE_INVALID', { challenge: 'invalid' });
+  }
+  if (ch.used) {
+    return out('DENY', 'REPLAY_DETECTED', { challenge: 'already used' });
+  }
+  if (new Date(ch.expires_at) < new Date()) {
+    return out('DENY', 'CHALLENGE_EXPIRED', { challenge: 'expired' });
+  }
+  // Atomic single-use consumption happens before any model runs
+  ch.used = true;
+  saveChallenges(challenges);
+
+  const consumed = { challenge: 'consumed (single use)' };
+  switch (scenario) {
+    case 'unavailable':
+      return out('UNAVAILABLE', 'SERVICE_UNAVAILABLE', { ...consumed, AD: 'timeout', ASR: 'not run', SV: 'not run' });
+    case 'deepfake':
+      return out('DENY', 'AUTH_FAILED', { ...consumed, AD: 'FAIL (spoof)', ASR: 'PASS', SV: 'skipped' });
+    case 'wrong_phrase':
+      return out('DENY', 'PHRASE_MISMATCH', { ...consumed, AD: 'PASS', ASR: 'FAIL (not an exact match)', SV: 'skipped' });
+    case 'impostor':
+      return out('DENY', 'AUTH_FAILED', { ...consumed, AD: 'PASS', ASR: 'PASS', SV: 'FAIL (below threshold)' });
+    case 'marginal':
+      return out('STEP_UP', 'TRY_AGAIN', { ...consumed, AD: 'PASS', ASR: 'PASS', SV: 'MARGINAL' });
+    default: {
+      const user = updateUser(userId, (u) => ({ sample_count: (u.sample_count || 0) + 1 }));
+      if (user) pushHistory(userId, user.sample_count, 'Guarded EMA update after APPROVE (0.8 old + 0.2 new)');
+      return out('APPROVE', 'OK', { ...consumed, AD: 'PASS', ASR: 'PASS (exact match)', SV: 'PASS', EMA: 'voiceprint updated' });
     }
   }
+}
 
-  // Offline realistic simulation
-  const sessionId = crypto.randomUUID ? crypto.randomUUID() : 'sess-' + Date.now();
+export const verifyVoice = async (userId, token, audioBlob, isLive = false, scenario = 'genuine') => {
   let result;
-
-  if (simulateSpoof) {
-    result = {
-      result: 'REJECT',
-      confidence: 0.94,
-      layer_blocked: 2,
-      session_id: sessionId,
-      reason: 'Deepfake / synthetic speech detected at Layer 2 (wav2vec2 gate)',
-      l2_label: 'spoof',
-      l2_confidence: 0.941,
-      l1_score: 0.15,
-      asr_transcript: 'synthetic audio detected',
-      asr_similarity: 0.1,
-    };
+  if (isLive) {
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('token', token);
+    formData.append('audio', audioBlob, 'verify.wav');
+    const res = await fetch(`${API_BASE}/v1/verify`, { method: 'POST', body: formData });
+    if (!res.ok) throw new Error(await readError(res, 'Verification failed'));
+    result = await res.json();
   } else {
-    // Realistic genuine authentication
-    const l1 = +(0.78 + Math.random() * 0.16).toFixed(3);
-    const l2 = +(0.96 + Math.random() * 0.035).toFixed(3);
-    const asrSim = +(0.85 + Math.random() * 0.15).toFixed(2);
-    result = {
-      result: 'ACCEPT',
-      confidence: l1,
-      layer_blocked: null,
-      session_id: sessionId,
-      reason: 'Authentication successful: All security layers passed',
-      l2_label: 'bonafide',
-      l2_confidence: l2,
-      l1_score: l1,
-      asr_transcript: 'verified speech phrase',
-      asr_similarity: asrSim,
-    };
+    result = simulateVerify(userId, token, scenario);
+    const logs = getLocalLogs(userId);
+    logs.unshift({
+      id: result.request_id,
+      created_at: new Date().toISOString(),
+      decision: result.decision,
+      reason_public: result.reason_public,
+      risk_level: result.risk_level,
+    });
+    saveLocalLogs(userId, logs);
   }
-
-  // Save to local logs
-  const logs = getLocalLogs(userId);
-  logs.unshift({
-    id: 'log-' + Math.random().toString(36).substring(2, 9),
-    user_id: userId,
-    l2_label: result.l2_label,
-    l2_confidence: result.l2_confidence,
-    l1_score: result.l1_score,
-    result: result.result,
-    layer_blocked: result.layer_blocked,
-    created_at: new Date().toISOString(),
-    reason: result.reason,
-  });
-  saveLocalLogs(userId, logs);
-
   return result;
 };
 
@@ -312,24 +361,32 @@ export const getVoiceprintHistory = async (userId, isLive = false) => {
     } catch (e) {
       console.warn('Live voiceprint history failed', e);
     }
+    return [];
   }
-
-  return [
-    { updated_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(), sample_count: 4 },
-    { updated_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), sample_count: 3 },
-    { updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), sample_count: 2 },
-    { updated_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), sample_count: 1 },
-  ];
+  return getLocalHistory(userId);
 };
 
+/**
+ * Audit trail. Public fields only (report Section 8.15, step 5):
+ * request id, decision and public reason, never a score.
+ */
 export const getAuthLogs = async (userId, isLive = false) => {
   if (isLive) {
     try {
       const res = await fetch(`${API_BASE}/users/${userId}/auth-logs`);
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const rows = await res.json();
+        return rows.map((r) => ({
+          id: r.id,
+          created_at: r.created_at,
+          decision: r.result,
+          reason_public: r.reason || '—',
+        }));
+      }
     } catch (e) {
       console.warn('Live auth logs failed', e);
     }
+    return [];
   }
   return getLocalLogs(userId);
 };
